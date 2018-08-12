@@ -1,7 +1,7 @@
 
 /*----- dialog ID -------*/
-//#define	 	on   1 
-//#define		off   0 
+//#define	 	on   1
+//#define		off   0
 typedef short		gene[140];
 typedef double		gener[20];
 

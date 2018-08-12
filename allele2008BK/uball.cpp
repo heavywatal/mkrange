@@ -15,7 +15,7 @@ extern gene genen;
 extern double mutationrate,benefit,cost;
 extern list<Cball>::iterator mp;
 extern Cball *indiv;
-extern double mdispersal;	
+extern double mdispersal;
 extern short nloci, nopoly;
 extern double allele_effect;
 extern double reso[21];
@@ -26,7 +26,7 @@ list<Cball>::iterator gridindiv[161][6][251];
 //extern short resoN[21],KresoN[21];
 void Cball::Iball(short x, short y, short s)// initialize position, sex, and fitness;
 {
-	
+
 	sexi=s;
 	xp=x;
 	ix=x;
@@ -37,7 +37,7 @@ void Cball::Iball(short x, short y, short s)// initialize position, sex, and fit
 fitness=0;
 	nomating=0;
 	nocandiate=0;
-}	
+}
 
 void Cball::Igene(short nthgene, short gf, short gl)// initialize genes
 {
@@ -45,7 +45,7 @@ void Cball::Igene(short nthgene, short gf, short gl)// initialize genes
      gene2[nthgene]=gl;
      genotype[nthgene]=gf+gl;
 }
-    
+
 double Cball::ResourceM()// calculate resouce use phenotypes from the genotype
 {
   short i;
@@ -54,7 +54,7 @@ double Cball::ResourceM()// calculate resouce use phenotypes from the genotype
   for(i=11;i<=10+nloci;i++)
   {
    sum += allele_effect*(gene1[i]+gene2[i]);
-   } 
+   }
    sum +=nrnd(sqrt(Vp));
    return sum;
  }
@@ -100,50 +100,50 @@ void Cball::nreproduction (list<Cball> *ablist,  short nogene, double mdis, doub
 		double didi, sddispersal,dist,dist2;
 		long  j,i, nx, ny,  d,k,x,y,xx,yy,y2;
 		short nooffspring,gg, og1[200], og2[200];
-	
+
 		double mu,mrr;
 	nomating++;
-	mateP=mp->ResourceM();	
+	mateP=mp->ResourceM();
 mx=mp->xp;
-my=mp->yp;	
-	
+my=mp->yp;
+
 x=xp;// position x for focal female
 y=yp;// position y for focal female
 xx=mp->xp;
-yy=mp->yp;			
+yy=mp->yp;
 if (y >= mp->yp)y2=yrange + mp->yp;else y2=mp->yp - yrange;
  dist=sqrt((x - xx)*(x - xx)+(y - yy)*(y - yy));
  dist2=sqrt((x-xx)*(x-xx)+(y-y2)*(y-y2));
- if(dist > dist2) dist=dist2;		
-mdistance=dist;		
+ if(dist > dist2) dist=dist2;
+mdistance=dist;
 	//mdistance=sqrt( (xp- mp->xp)*(xp-mp->xp)+(yp- mp->yp)*(yp- mp->yp));
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
+
 //	mx=mp->xp;
 //	my=mp->yp;
 //	if(mdistance > 10000 || mdistance < 0)
 //	{
 //	k++;
-	
-	
+
+
 //	}
-		
+
 	nooffspring = fitness;
-	
+
 		if (nooffspring > 0 )
 			{
 				for (j = 1; j<= nooffspring;j++)
 					{
 						for(k=1;k<=nogene;k++)
 						{
-						
+
 						///////  inheritance genes from mother and father
 						gg = randombit();// random number 1 or 0
 						if ( gg ==1 )
@@ -158,7 +158,7 @@ mdistance=dist;
 						///////// mutation ////////
 						if(k>10)mrr=mr;else mrr=nmr;
 						mu=longurnd();
-						
+
 						if (mrr >= mu)
 							{
 							if( og1[k]==1)
@@ -182,26 +182,26 @@ mdistance=dist;
 								og2[k]=1;
 								}
 							}
-						
+
 						}
-						
+
 					gg = randombit();// determin offspring sex
 					if (gg==0)
 					{sddispersal=fdis;}
 					if(gg==1)
 					{sddispersal=mdis;}
-	
-				
+
+
 							do{//// desersal
 							didi = nrnd(sddispersal); // random number from normal distribtion with sddispersal standard deviationa and 0 mean
-							
+
 							d=abs(didi);
 							randomove(ix, iy, d, &nx, &ny);
 							if(ny > yrange) ny=ny - yrange;
 							if(ny <=0) ny=yrange+ny;
 							}while((nx <= minxrange) || (nx > xrange )   ||  (ny <= 0) || (ny > yrange ) );
-							
-				
+
+
 						//indiv=new Cball;
 						indiv->Iball(nx, ny,gg);// Initialize offspring position and sex
 						for (i=1;i<=nogene;i++)
@@ -209,17 +209,17 @@ mdistance=dist;
 							indiv->Igene(i, og1[i], og2[i]);// offspring genes
 							}
 							ablist->push_back(*indiv);// add offspring the list
-						
+
 				}
 			}
-			
+
 	}
 
 
 // calculate fitness
 void Cball::measurefitness(list<Cball>  *clist,   double RR, double gradient,double Vs,double K,double Range,double MS)
 {
-//Vs fitness function variance, K carring capacity, 
+//Vs fitness function variance, K carring capacity,
 short  AA, AB, BB,tot,y2,t1,b1,xg,yg,ff,r,t,b,i,j,n,xx,yy,jj[4],sfitness;
 double dist,Sx, dfit,sfit,dist2;
 tot=0;
@@ -265,7 +265,7 @@ for(i=ff;i<=r;i++)
 		{
 	for(j=1;j<=3;j++)
 		{
-			
+
 			for(n=1;n<=noindiv[i][jj[j]];n++)
 			{
 			xx=gridindiv[i][jj[j]][n]->xp;
@@ -284,9 +284,9 @@ for(i=ff;i<=r;i++)
 			 		candidatemate[nocandiate]=gridindiv[i][jj[j]][n];// store the canditate males
 					}
 			}
-									
-		
-			
+
+
+
 		 }
 		}
 
@@ -297,11 +297,11 @@ for(i=ff;i<=r;i++)
 			 dist=sqrt((ix-indiv->xp)*(ix-indiv->xp)+(iy-indiv->yp)*(iy-indiv->yp));
 			 dist2=sqrt((ix-indiv->xp)*(ix-indiv->xp)+(iy-y2)*(iy-y2));
 			 if(dist > dist2) dist=dist2;
-				if (dist <= Range )tot++;	
+				if (dist <= Range )tot++;
 			 }
-				
-*/			 
-	 		
+
+*/
+
 
 
 
@@ -317,7 +317,7 @@ fitness=prnd(dfitness);
 //if(dfitness <=0) dfitness=0;
 
 
-}//endomethod;	 	 
+}//endomethod;
 //*******************************************************************
 
       // Functions
@@ -334,17 +334,17 @@ void Newball(short n, short male, list<Cball>  *list1, double fr)
  short *tur;
  short *ge1,*ge2;
 
-list<Cball>::iterator individual; 
+list<Cball>::iterator individual;
 ge1=new short[n+1];
 ge2=new short[n+1];
 
 tur=new short[n+1];
-//// creat n individuals and initialize position and sex 
+//// creat n individuals and initialize position and sex
 
 for(i=1;i<=n-male;i++)
-	 	{ 
- 	
- 	xx=rndfrom1(500)+xrange/2-250;// random number for 
+	 	{
+
+ 	xx=rndfrom1(500)+xrange/2-250;// random number for
  	 yy=rndfrom1(yrange);
 	 indiv->Iball(xx,yy,0);
   	list1->push_back(*indiv);
@@ -357,7 +357,7 @@ for(i=1;i<=n-male;i++)
     indiv->Iball(xx,yy,1);
     list1->push_back(*indiv);
   		}
-		
+
 
 aa=rounds(fr*fr*n);
 ab=rounds(fr*(1-fr)*2*n);
@@ -365,83 +365,83 @@ bb=rounds((1-fr)*(1-fr)*n);
 
 //////////// set genes for  resource use ///////
 for( j=1;j<=10;j++)
-		{ 
+		{
 		 GerateRandomperm (n, tur);
 		 for(i=1;i<=aa;i++){ ge1[tur[i]]=1;ge2[tur[i]]=1;}
 		 for(i=aa+1;i<=aa+ab;i++){ ge1[tur[i]]=1;ge2[tur[i]]=0;}
 		 for(i=aa+ab+1;i<=n;i++){ ge1[tur[i]]=0;ge2[tur[i]]=0;}
 		 for(individual=list1->begin(),i=1;individual!=list1->end();individual++,i++)
 		individual->Igene(j,ge1[i],ge2[i]);
-		}	
+		}
 
 for( j=11;j<=10+(nloci-nopoly)/2;j++)
-		{ 
+		{
 		for(individual=list1->begin();individual!=list1->end();individual++)
 			individual->Igene(j,1, 1);
 		}
-for( j=11+(nloci-nopoly)/2;j<=10+(nloci-nopoly)/2+nopoly;j++)/// genes 1 and 0 at 3  loci  are randomly allocated for all the  individuals 
-		{ 
+for( j=11+(nloci-nopoly)/2;j<=10+(nloci-nopoly)/2+nopoly;j++)/// genes 1 and 0 at 3  loci  are randomly allocated for all the  individuals
+		{
 		 GerateRandomperm (n, tur);
 		 for(i=1;i<=aa;i++){ ge1[tur[i]]=1;ge2[tur[i]]=1;}
 		 for(i=aa+1;i<=aa+ab;i++){ ge1[tur[i]]=1;ge2[tur[i]]=0;}
 		 for(i=aa+ab+1;i<=n;i++){ ge1[tur[i]]=0;ge2[tur[i]]=0;}
 		 for(individual=list1->begin(),i=1;individual!=list1->end();individual++,i++)
 			individual->Igene(j,ge1[i],ge2[i]);
-		}		
+		}
 for( j=11+(nloci-nopoly)/2+nopoly;j<=10+nloci;j++)
-		{ 
+		{
 		for(individual=list1->begin();individual!=list1->end();individual++)
 			individual->Igene(j,0, 0);
 		}
 
-/*	
-/// set genes for mate recognition		
+/*
+/// set genes for mate recognition
 for( j=11;j<=12;j++)
-		{ 
+		{
 		for(individual=list1->begin();individual!=list1->end();individual++)
 			individual->Igene(j,1, 1);
 		}
-for( j=13;j<=16;j++)/// genes 1 and 0 at 4  loci  are randomly allocated for all the  individuals 
-		{ 
+for( j=13;j<=16;j++)/// genes 1 and 0 at 4  loci  are randomly allocated for all the  individuals
+		{
 		GerateRandomperm (n, tur);
 		 for(i=1;i<=aa;i++){ ge1[tur[i]]=1;ge2[tur[i]]=1;}
 		 for(i=aa+1;i<=aa+ab;i++){ ge1[tur[i]]=1;ge2[tur[i]]=0;}
 		 for(i=aa+ab+1;i<=n;i++){ ge1[tur[i]]=0;ge2[tur[i]]=0;}
 		 for(individual=list1->begin(),i=1;individual!=list1->end();individual++,i++)
 			individual->Igene(j,ge1[i],ge2[i]);
-		
-		}		
+
+		}
 for( j=17;j<=20;j++)
-		{ 
+		{
 		for(individual=list1->begin();individual!=list1->end();individual++)
 			individual->Igene(j,0, 0);
-		}	 
-	 
-///morph for choice	
+		}
+
+///morph for choice
 for( j=21;j<=22;j++)
-		{ 
+		{
 		for(individual=list1->begin();individual!=list1->end();individual++)
 			individual->Igene(j,1, 1);
 		}
-for( j=23;j<=26;j++)/// genes 1 and 0 at 4  loci  are randomly allocated for all the  individuals 
-		{ 
+for( j=23;j<=26;j++)/// genes 1 and 0 at 4  loci  are randomly allocated for all the  individuals
+		{
 		GerateRandomperm (n, tur);
 		 for(i=1;i<=aa;i++){ ge1[tur[i]]=1;ge2[tur[i]]=1;}
 		 for(i=aa+1;i<=aa+ab;i++){ ge1[tur[i]]=1;ge2[tur[i]]=0;}
 		 for(i=aa+ab+1;i<=n;i++){ ge1[tur[i]]=0;ge2[tur[i]]=0;}
 		 for(individual=list1->begin(),i=1;individual!=list1->end();individual++,i++)
 			individual->Igene(j,ge1[i],ge2[i]);
-		}		
+		}
 for( j=27;j<=30;j++)
-		{ 
+		{
 		for(individual=list1->begin();individual!=list1->end();individual++)
 			individual->Igene(j,0, 0);
-		}	 
-	 	 
+		}
+
 ///  selectivity
 
-for( j=31;j<=32;j++)/// genes 1 and 0 at 2  loci  are randomly allocated for all the  individuals 
-		{ 
+for( j=31;j<=32;j++)/// genes 1 and 0 at 2  loci  are randomly allocated for all the  individuals
+		{
 		GerateRandomperm (n, tur);
 		 for(i=1;i<=aa;i++){ ge1[tur[i]]=1;ge2[tur[i]]=1;}
 		 for(i=aa+1;i<=aa+ab;i++){ ge1[tur[i]]=1;ge2[tur[i]]=0;}
@@ -450,40 +450,40 @@ for( j=31;j<=32;j++)/// genes 1 and 0 at 2  loci  are randomly allocated for all
 			individual->Igene(j,ge1[i],ge2[i]);
 		}
 for( j=33;j<=40;j++)
-		{ 
+		{
 		for(individual=list1->begin();individual!=list1->end();individual++)
 			individual->Igene(j,0, 0);
 		}
 
-///// repro iso	 
-	 
+///// repro iso
+
 for( j=41;j<=50;j++)
-		{ 
+		{
 		for(individual=list1->begin();individual!=list1->end();individual++)
 			individual->Igene(j,1, 10);
 		}
 for( j=51;j<=60;j++)
-		{ 
+		{
 		for(individual=list1->begin();individual!=list1->end();individual++)
 			individual->Igene(j,0, 0);
-		}		 
-	 
-*/	 
-	
+		}
 
-	 	 
+*/
+
+
+
 	delete tur;
 	delete ge1;
 	delete ge2;
-		
-	
+
+
  }
 
-	
+
 ///// serach for candidate mates
-	
+
 void matingcount (list<Cball>  *clist, list<Cball>::iterator focalindiv,list<Cball>::iterator *matp, long noi,  short matingsize, short *dens)
-	{	
+	{
 			long  i, k,xx, yy, x, y,NM,y2;
 			double  dist,sum,r,dist2;
 			double total_fitness=0;
@@ -495,26 +495,26 @@ void matingcount (list<Cball>  *clist, list<Cball>::iterator focalindiv,list<Cba
 		k = 0;
 		for(i=1;i <=NM;i++)
 					{
-						
+
 						if (focalindiv->candidatemate[i]->fitness >0 )
 							{
-								
-								 
+
+
 								xx=focalindiv->candidatemate[i]->xp;
-								yy=focalindiv->candidatemate[i]->yp;	
-								 
+								yy=focalindiv->candidatemate[i]->yp;
+
 							      if (y >= yy)y2=yrange + yy;else y2=yy - yrange;
-								
+
 								 dist=sqrt((x - xx)*(x - xx)+(y - yy)*(y - yy));
 								 dist2=sqrt((x-xx)*(x-xx)+(y-y2)*(y-y2));
-								 if(dist > dist2) dist=dist2;		
-								 						
+								 if(dist > dist2) dist=dist2;
 
-																								 
-								 
+
+
+
 								if(dist <=matingsize  )
 									{
-									
+
 									/// count and save candidate male
 									 k++;
 									 total_fitness +=focalindiv->candidatemate[i]->dfitness;
@@ -523,12 +523,12 @@ void matingcount (list<Cball>  *clist, list<Cball>::iterator focalindiv,list<Cba
 									 *dens +=1;
 				   					 }
 							}
-					
+
 					}
-					
+
 		if(*dens > 0)
 		{
-		sum=0;i=1;	
+		sum=0;i=1;
 		r=urnd()*total_fitness;
 			do{
 			mk=matp[i];
@@ -539,14 +539,14 @@ void matingcount (list<Cball>  *clist, list<Cball>::iterator focalindiv,list<Cba
 		*dens=i-1;
 		}
 	mk=matp[*dens];
-		
+
 
 	}
 
 
-// save the results as afile	
-	 		
-	
+// save the results as afile
+
+
 void SaveF(list<Cball>  *clist,short g,short gg,double md,long n )
 {
 long  m1,i,ge;
@@ -575,7 +575,7 @@ ab[6]=rch[0];
 ab[7]=rch[1];
 ab[8]=rch[2];
 ab[9]=rch[3];
-ab[10]=rch[4]; 
+ab[10]=rch[4];
 ab[5]=0x2D;
 ab[4]=nots[0];
 //ab[5]=not[1];
@@ -590,15 +590,15 @@ for(indiv=clist->begin(), i=1;i<=n;indiv++,i++)
    m2=indiv->ResourceM();
   if(m1==0) m3=indiv->fitness; else m3=indiv->dfitness;
     fprintf(fp, "%d\t %d\t %d\t %f\t  %7.3f\t", indiv->xp, indiv->yp,m1, m2, m3);
-   
+
    for(ge=1;ge<=nogene;ge++)
         fprintf(fp, "%d\t ", indiv->gene1[ge]+ indiv->gene2[ge]);
-    
- 	 fprintf(fp, "\n");		
+
+ 	 fprintf(fp, "\n");
   }
-  
+
   fclose(fp);
- } 		
+ }
 
 
 
@@ -635,16 +635,16 @@ ab[4]=nots[0];
 }
 
 fp=fopen(ab,"w");
-  
+
 	{
    m1=0;
- 
+
     fprintf(fp, "%d",m1);
- 	// fprintf(fp, "\n");		
+ 	// fprintf(fp, "\n");
   }
-  
+
   fclose(fp);
- } 		
+ }
 
 
 void SaveA(list<Cball>  *clist,short g,short gg,double md, long n, short clas )
@@ -655,12 +655,12 @@ list<Cball>::iterator indiv;
 double m3,m4,w;
 double avfit[322];
 short nof[322];
-for(x=0;x<=321;x++) 
+for(x=0;x<=321;x++)
   {
     avfit[x]=0;
     nof[x]=0;
     }
- 
+
 FILE *fp;
 sprintf(rch, "%d", g);
 sprintf(nots, "%d", gg);
@@ -681,7 +681,7 @@ ab[6]=rch[0];
 ab[7]=rch[1];
 ab[8]=rch[2];
 ab[9]=rch[3];
-ab[10]=rch[4]; 
+ab[10]=rch[4];
 ab[5]=0x2D;
 ab[4]=nots[0];
 //ab[5]=not[1];
@@ -707,21 +707,21 @@ for(x=1; x<=clas;x++)
 	}
       }
    }
-	    
-	    
+
+
 
 for(x=1; x<=clas;x++)
-	{ 
+	{
    	m1=w*(x-1);
   	 m2=w*x;
    	m3=nof[x];
   	 if (nof[x]==0) m4=0; else m4= avfit[x]/(double)nof[x];
 	   fprintf(fp, "%d\t %d\t %7.4f\t %7.4f\t",m1, m2, m3, m4);
-	  fprintf(fp, "\n");		
+	  fprintf(fp, "\n");
   }
-  
+
   fclose(fp);
- } 		
+ }
 
 void AssignBucket(list<Cball>  *list1)
 {
@@ -734,7 +734,7 @@ nogy=yrange/200;//the max number of y dimention of the bucket girds　ｙ=1000 y
 for(xc=0;xc<=nogx;xc++)
  for(yc=0;yc<=nogy;yc++)
 		noindiv[xc][yc]=0;//Initialize the array of the number of individuals in a bucket grid xc yc
-		
+
 	for(indiv=list1->begin();indiv !=list1->end();indiv++)
 		{
   			xc=(short)ceil(indiv->xp/200.);yc=(short)ceil(indiv->yp/200.);
@@ -745,6 +745,5 @@ for(xc=0;xc<=nogx;xc++)
 
 
 
-  
+
 }
-  

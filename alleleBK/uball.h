@@ -7,7 +7,7 @@ class Cball {				/* Class Declaration				*/
 public:
 		short xp,yp, ix,iy, homerangesize, sexi,mx,my;
 		short	encounter,nomating,mateP,nocandiate;//mother,
-		double	ResouceP, MatingP,ChoiceP, ReprodIsolP,fitness,dfitness,mdistance; 
+		double	ResouceP, MatingP,ChoiceP, ReprodIsolP,fitness,dfitness,mdistance;
 		gene	gene1, gene2,genotype;
 	      list<Cball>::iterator candidatemate[1500];
 		void Iball(short x, short y, short s);

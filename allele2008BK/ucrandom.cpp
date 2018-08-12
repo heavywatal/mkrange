@@ -1,24 +1,24 @@
 
 #include "uglobal.h"
 #include "ucrandom.h"
-#include <math.h> 
+#include <math.h>
 #include <time.h>
-#define RAND_MAX 32767 
+#define RAND_MAX 32767
 #define ULONG_MAX 4294967295
 
 static unsigned long next=1; /* 系列 */
 static unsigned long lnext=1; /* 系列 */
 
-unsigned long longrndc() 
+unsigned long longrndc()
 {
 	lnext = lnext*1566083941UL + 1;
 return lnext;
-	
+
 }
 
-double longurnd() 
+double longurnd()
 {
-	return (1.0 / (ULONG_MAX + 1.0) ) * longrndc(); 
+	return (1.0 / (ULONG_MAX + 1.0) ) * longrndc();
 }
 
 
@@ -26,7 +26,7 @@ short randc(void) /* 0〜32767 */
 {
   next=next*1103515245+12345;
   return (unsigned short) (next/65536) % 32768 ;
-                   
+
 } /* rand */
 
 
@@ -78,7 +78,7 @@ short s;
 /* 単位乱数関数  Unit RaNDom */
 /* 0≦urnd()<1 */
 
-double urnd(void) 
+double urnd(void)
 {
   return randc()/(RAND_MAX+1.);
 } /* urnd */
@@ -111,7 +111,7 @@ double nrnd( double x) /* 倍率 */
 {
   static int f=0;
   static double k,q;
-  
+
   if(f)
   {
     f=0;
@@ -147,7 +147,7 @@ short prnd( double n)  /* 平均回数／単位時間 */
 short randombit()
 {
 	short			k, g;
-	
+
 		k = rnd(1000);
 		g = k % 2;
 		if (g == 0)
@@ -180,8 +180,8 @@ void ArrangeFreq (short n, double freq, short *genn1, short *genn2)
 {
 	double 		A, B, FA, FR1, FR2;
 	short		i,  AA, AB, BB;
-	
-		
+
+
 				A = n * 2 * freq;
 				B = n * 2 * (1 - freq);
 
@@ -193,11 +193,11 @@ void ArrangeFreq (short n, double freq, short *genn1, short *genn2)
 						FA = A / (A + B);
 						FR1 = drnd(1);
 						FR2 = drnd(1);
-						if (FR1 <= FA) 
+						if (FR1 <= FA)
 							{
 								A = A - 1;
 								FA = A / (A + B);
-								if (FR2 <= FA) 
+								if (FR2 <= FA)
 									{
 										genn1[i] = 1;
 										genn2[i] = 1;
@@ -216,7 +216,7 @@ void ArrangeFreq (short n, double freq, short *genn1, short *genn2)
 							{
 								B = B - 1;
 								FA = A / (A + B);
-								if (FR2 <= FA) 
+								if (FR2 <= FA)
 									{
 										genn1[ i] = 0;
 										genn2[ i] = 1;
@@ -232,7 +232,7 @@ void ArrangeFreq (short n, double freq, short *genn1, short *genn2)
 									}
 							}
 					}
-			
+
 
 }
 
@@ -240,7 +240,7 @@ void ArrangeFreq (short n, double freq, short *genn1, short *genn2)
 void GerateRandomperm (short n, short *a)
 {
 	short	i, j, t;
-	
+
 		for (i = 1;i<=n;i++)
 			{
 			a[i]= i;
@@ -262,7 +262,7 @@ a = floor(d );
 
 b=d-a;
 if (b>=0.5)
-	{ 
+	{
 	return (short)ceil(d);
 	}
 	else

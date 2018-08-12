@@ -7,12 +7,12 @@ class Cball {				/* Class Declaration				*/
 public:
 		short xp,yp, ix,iy, homerangesize, sexi,mx,my;
 		short	ages, encounter,mother,nomating,mateP;
-		double	ResouceP, MatingP,ChoiceP, ReprodIsolP,fitness,dfitness,mdistance; 
+		double	ResouceP, MatingP,ChoiceP, ReprodIsolP,fitness,dfitness,mdistance;
 		gene	gene1, gene2,genotype;
-	
-		
+
+
 		void Iball(short x, short y, short s);
-		
+
 		short ResourceM();
 		short choice();
 		short choiceM();

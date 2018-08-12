@@ -3,7 +3,7 @@
 
 short randc(void);  /* random integer 0〜32767 */
 void srand( unsigned short seed);
-unsigned long lsrandc(unsigned long  seed); 
+unsigned long lsrandc(unsigned long  seed);
 unsigned long randomizec(void);/* initialize randc() */
 short rnd( short x); /*  random integer 0 <= rnd <= x  */
 double drnd( double x); /*  random double 0 <= drnd <= x  */
@@ -19,6 +19,6 @@ short rndfrom1( short x);
 void GerateRandomperm (short n, short *a);
 unsigned long longrndc();
 double longurnd();
-unsigned long llsrandc(unsigned long  seed); 
+unsigned long llsrandc(unsigned long  seed);
 unsigned long lrandomizec(void);/* initialize randc() */
 short rounds(double d);
