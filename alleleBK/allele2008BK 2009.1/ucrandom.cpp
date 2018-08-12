@@ -6,8 +6,8 @@
 #define RAND_MAX 32767 
 #define ULONG_MAX 4294967295
 
-static unsigned long next=1; /* Œn—ñ */
-static unsigned long lnext=1; /* Œn—ñ */
+static unsigned long next=1; /* ç³»åˆ— */
+static unsigned long lnext=1; /* ç³»åˆ— */
 
 unsigned long longrndc() 
 {
@@ -22,7 +22,7 @@ double longurnd()
 }
 
 
-short randc(void) /* 0`32767 */
+short randc(void) /* 0ã€œ32767 */
 {
   next=next*1103515245+12345;
   return (unsigned short) (next/65536) % 32768 ;
@@ -30,12 +30,12 @@ short randc(void) /* 0`32767 */
 } /* rand */
 
 
-unsigned long lsrandc(unsigned long  seed) /* —”í(0`ULONG_MAX) */
+unsigned long lsrandc(unsigned long  seed) /* ä¹±æ•°ç¨®(0ã€œULONG_MAX) */
 {
   return next=seed;
 } /* lsrand */
 
-unsigned long llsrandc(unsigned long  seed) /* —”í(0`ULONG_MAX) */
+unsigned long llsrandc(unsigned long  seed) /* ä¹±æ•°ç¨®(0ã€œULONG_MAX) */
 {
   return lnext=seed;
 } /* lsrand */
@@ -51,15 +51,15 @@ return llsrandc(time(NULL));
 }
 
 
-/* ®”—”ŠÖ”  integral RaNDom */
-/* 0`x */
-short rnd( short x) /* 0`RAND_MAX */
+/* æ•´æ•°ä¹±æ•°é–¢æ•°  integral RaNDom */
+/* 0ã€œx */
+short rnd( short x) /* 0ã€œRAND_MAX */
 {
   return randc() % (x+1);
 } /* rnd */
 
-/* ®”—”ŠÖ”  integral RaNDom */
-short rndfrom1( short x) /* 1`RAND_MAX */
+/* æ•´æ•°ä¹±æ•°é–¢æ•°  integral RaNDom */
+short rndfrom1( short x) /* 1ã€œRAND_MAX */
 {
 short s;
   do {
@@ -75,8 +75,8 @@ short s;
 
 /* urnd.f */
 
-/* ’PˆÊ—”ŠÖ”  Unit RaNDom */
-/* 0…urnd()<1 */
+/* å˜ä½ä¹±æ•°é–¢æ•°  Unit RaNDom */
+/* 0â‰¦urnd()<1 */
 
 double urnd(void) 
 {
@@ -87,27 +87,27 @@ double urnd(void)
 /* drnd.f */
 
 
-/* À”—”ŠÖ”  Double RaNDom */
-/* 0`x */
-double drnd( double x) /* Å‘å’l */
+/* å®Ÿæ•°ä¹±æ•°é–¢æ•°  Double RaNDom */
+/* 0ã€œx */
+double drnd( double x) /* æœ€å¤§å€¤ */
 {
   return x/RAND_MAX*randc();
 } /* drnd */
 
 /* zrnd.f */
-/* •‰’l®”—”ŠÖ”  Zero RaNDom */
-/* -x`+x */
-short zrnd( short x) /* â‘Î’l 0`RAND_MAX */
+/* è² å€¤æ•´æ•°ä¹±æ•°é–¢æ•°  Zero RaNDom */
+/* -xã€œ+x */
+short zrnd( short x) /* çµ¶å¯¾å€¤ 0ã€œRAND_MAX */
 {
   return randc() % (2*x+1)-x;
 } /* zrnd */
 
 
 /* nrnd.f */
-/* ³‹K—”ŠÖ”  Normal RaNDom */
-/* •W€³‹K•ª•z*x */
+/* æ­£è¦ä¹±æ•°é–¢æ•°  Normal RaNDom */
+/* æ¨™æº–æ­£è¦åˆ†å¸ƒ*x */
 
-double nrnd( double x) /* ”{—¦ */
+double nrnd( double x) /* å€ç‡ */
 {
   static int f=0;
   static double k,q;
@@ -133,10 +133,10 @@ double normalselect (double mean, double sd)
 
 
 /* prnd.f */
-/* ƒ|ƒAƒ\ƒ“—”  Poisson Random */
-/* ‰ñ”^’PˆÊŠÔ */
+/* ãƒã‚¢ã‚½ãƒ³ä¹±æ•°  Poisson Random */
+/* å›æ•°ï¼å˜ä½æ™‚é–“ */
 
-short prnd( double n)  /* •½‹Ï‰ñ”^’PˆÊŠÔ */
+short prnd( double n)  /* å¹³å‡å›æ•°ï¼å˜ä½æ™‚é–“ */
 {
   short k=0;
   n=exp(n)*urnd();

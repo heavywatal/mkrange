@@ -1,7 +1,7 @@
 
 
 
-short randc(void);  /* random integer 0Å`32767 */
+short randc(void);  /* random integer 0„Äú32767 */
 void srand( unsigned short seed);
 unsigned long lsrandc(unsigned long  seed); 
 unsigned long randomizec(void);/* initialize randc() */
@@ -10,7 +10,7 @@ double drnd( double x); /*  random double 0 <= drnd <= x  */
 short zrnd( short x); /* random double -x <= zrnd <= x  */
 double nrnd( double x); /*   Normal RaNDom */
 short prnd( double n);
-double urnd(void);/* 0ÅÖurnd()<1 */
+double urnd(void);/* 0‚â¶urnd()<1 */
 double normalselect (double mean, double sd);
 short randombit();
 void randomove (long x, long y, long d,  long *ntx, long *nty);
