@@ -1,0 +1,10 @@
+build/
+*.build
+*.mode1
+*.mode1v3
+*.pbxuser
+*.exe
+*.mcp
+*.zip
+RangeW_Data
+Range.1
