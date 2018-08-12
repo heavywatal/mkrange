@@ -1,11 +1,11 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <math.h>
-#include <time.h>
-#include <iostream.h>
-#include <fstream.h>
-#include "list.h"
+#include <cstdlib>
+#include <cstdio>
+#include <cstring>
+#include <cmath>
+#include <ctime>
+#include <iostream>
+#include <fstream>
+#include <list>
 #include "uglobal.h"
 #include "ucrandom.h"
 using namespace std;  //introduces namespace std

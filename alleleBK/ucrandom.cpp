@@ -1,8 +1,8 @@
 
 #include "uglobal.h"
 #include "ucrandom.h"
-#include <math.h>
-#include <time.h>
+#include <cmath>
+#include <ctime>
 #define RAND_MAX 32767
 #define ULONG_MAX 4294967295
 

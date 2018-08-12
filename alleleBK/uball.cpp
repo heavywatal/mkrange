@@ -1,10 +1,10 @@
-#include <math.h>
-#include <stdlib.h>
-#include <stdio.h>
+#include <cmath>
+#include <cstdlib>
+#include <cstdio>
 #include <iostream>
 #include "ucrandom.h"
 #include "uball.h"
-#include <fstream.h>
+#include <fstream>
 #include <vector>
 #include <string>
 

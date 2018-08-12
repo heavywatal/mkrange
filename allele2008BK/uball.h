@@ -1,6 +1,6 @@
 #include "uglobal.h"
-#include <stdio.h>
-#include "list.h"
+#include <cstdio>
+#include <list>
 
 class Cball {				/* Class Declaration				*/
 
