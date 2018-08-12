@@ -8,7 +8,7 @@
 #include <list>
 #include "uglobal.h"
 #include "ucrandom.h"
-using namespace std;  //introduces namespace std
+
 #include "uball.h"
 #include <unistd.h>
 
@@ -84,7 +84,7 @@ nogene=10;       // No of loci
 norepeat=1;      // No of reprilcate
 nogeneration=100;// No of generations for one simulation 2000;*/
 /////////////////File Input ////////////
-ifstream fin("Inputfile");
+std::ifstream fin("Inputfile");
 
 fin
  >> a >> xrange
@@ -124,8 +124,8 @@ for(prep=1;prep<=1;prep++)// repeat
 {
 //fdispersal=revar[prep];
 //mdispersal=revar[prep];
-cout<< "no of loci x effect x 2 =" << nloci*allele_effect*2 << endl;
-cout << "gradient x xmax(=x range)=" << G*xrange << endl;
+std::cout<< "no of loci x effect x 2 =" << nloci*allele_effect*2 << std::endl;
+std::cout << "gradient x xmax(=x range)=" << G*xrange << std::endl;
 if(nloci*allele_effect*2 !=  G*xrange)norepeat=0;
 for(gggg=1;gggg<=norepeat;gggg++)// repeat
 {
@@ -147,10 +147,10 @@ if(itemP<=0)
  y=nogeneration;
  }
 if (y==1 )
-   cout << "Gener = " << y << ":Repeat = " << gggg << "No= " << itemP <<  endl;
+   std::cout << "Gener = " << y << ":Repeat = " << gggg << "No= " << itemP <<  std::endl;
  if ( y % 2 ==0)
 	 {
-  	 cout << "Gener = " << y << ":Repeat = " << gggg << "No= " << itemP << "Min(x)=" << minx << "Max(x)=" << maxx << endl;
+  	 std::cout << "Gener = " << y << ":Repeat = " << gggg << "No= " << itemP << "Min(x)=" << minx << "Max(x)=" << maxx << std::endl;
 	// print no of generations and no of individuals
 	leftp=0;
 	rightp=0;
@@ -249,7 +249,7 @@ alist->clear();// clear all individuals
 
 
 
-cout << "x=" << xrange <<  ";y=" << yrange << ";n=" << no << ";Vp=" << Vp <<  ";HR=" << homeranges << ";mdis=" << mdispersal <<
+std::cout << "x=" << xrange <<  ";y=" << yrange << ";n=" << no << ";Vp=" << Vp <<  ";HR=" << homeranges << ";mdis=" << mdispersal <<
 ";fdis=" << fdispersal <<  ";mating=" << sizemating <<   ";G=" << G << ";Vs=" << VS << ";K=" <<
 CC <<  ";r="<< reprate << ";mr=" << mutationr << ";ng=" << nogene ;
 

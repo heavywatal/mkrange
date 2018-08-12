@@ -352,11 +352,11 @@ void Newball(short n, short male, std::list<Cball>  *list1, double fr)
 	std::vector<std::vector<int> > vecvecint;
 	vecvecint = read_int_array("TestInput.txt");
 	n=vecvecint.size();
-	//cout << n << endl;
+	//std::cout << n << std::endl;
 
 	nloci=	vecvecint[0].size()-3;
 
-	//cout << nloci << endl;
+	//std::cout << nloci << std::endl;
 
 	for (size_t row=0; row<vecvecint.size(); ++row) {
 		indiv->Iball(vecvecint[row][0],vecvecint[row][1],vecvecint[row][2]);
@@ -407,7 +407,7 @@ void Newball(short n, short male, std::list<Cball>  *list1, double fr)
 			individual->Igene(j,aa,bb);
 		}
 	}
-	//cout << "006" << endl;
+	//std::cout << "006" << std::endl;
 	/*
 
 	 for( j=1;j<=10;j++)
