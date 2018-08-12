@@ -18,16 +18,16 @@ public:
 		short choiceM();
 		short select();
 		void Igene(short nthgene, short gf, short gl);
-		void nreproduction (list<Cball> *ablist,  short nogene, double mdis, double fdis, double mr, double nmr);
-		void measurefitness(list<Cball>  *clist,  double RR, double gradient,double Vs,double K,double Range);
+		void nreproduction (std::list<Cball> *ablist,  short nogene, double mdis, double fdis, double mr, double nmr);
+		void measurefitness(std::list<Cball>  *clist,  double RR, double gradient,double Vs,double K,double Range);
 		};
 
 /*******************function********************/
 
 
-void Newball(short n, short male, list<Cball>  *list1, double fr);
-void matingcount(list<Cball>  *clist, list<Cball>::iterator focalindiv,list<Cball>::iterator *matp, long noi,  short matingsize,  short *dens);
-void SaveF(list<Cball>  *clist,short g,short gg,double md, long n);
+void Newball(short n, short male, std::list<Cball>  *list1, double fr);
+void matingcount(std::list<Cball>  *clist, std::list<Cball>::iterator focalindiv,std::list<Cball>::iterator *matp, long noi,  short matingsize,  short *dens);
+void SaveF(std::list<Cball>  *clist,short g,short gg,double md, long n);
 short Resource(short a, short b);
 void SaveE(short g,short gg);
-void SaveA(list<Cball>  *clist,short g,short gg,double md, long n, short clas );
+void SaveA(std::list<Cball>  *clist,short g,short gg,double md, long n, short clas );

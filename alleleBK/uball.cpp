@@ -18,14 +18,14 @@ long no;
 extern double Vp;
 extern gene genen;
 extern double mutationrate,benefit,cost;
-extern list<Cball>::iterator mp;
+extern std::list<Cball>::iterator mp;
 extern Cball *indiv;
 extern double mdispersal;
 extern short nloci, nopoly;
 extern double allele_effect;
 extern double reso[21];
 short noindiv[165][7];
-list<Cball>::iterator gridindiv[161][6][301];
+std::list<Cball>::iterator gridindiv[161][6][301];
 
 
 //extern short resoN[21],KresoN[21];
@@ -100,7 +100,7 @@ short Cball::select()// calculate selectivity phenotypes from the genotype
 */
 
 // reproduction
-void Cball::nreproduction (list<Cball> *ablist,  short nogene, double mdis, double fdis, double mr, double nmr)
+void Cball::nreproduction (std::list<Cball> *ablist,  short nogene, double mdis, double fdis, double mr, double nmr)
 		{
 		double didi, sddispersal,dist,dist2;
 		long  j,i, nx, ny,  d,k,x,y,xx,yy,y2;
@@ -222,7 +222,7 @@ mdistance=dist;
 
 
 // calculate fitness
-void Cball::measurefitness(list<Cball>  *clist,   double RR, double gradient,double Vs,double K,double Range,double MS)
+void Cball::measurefitness(std::list<Cball>  *clist,   double RR, double gradient,double Vs,double K,double Range,double MS)
 {
 //Vs fitness function variance, K carring capacity,
 short  AA, AB, BB,tot,y2,t1,b1,xg,yg,ff,r,t,b,i,j,n,xx,yy,jj[4],sfitness;
@@ -232,7 +232,7 @@ AA=0;
 AB=0;
 BB=0;
 
-list<Cball>::iterator indiv;
+std::list<Cball>::iterator indiv;
 t1=0;
 b1=0;
 xg=(short)ceil((double)(xp)/200.);
@@ -339,13 +339,13 @@ fitness=prnd(dfitness);
 
 // Create new indiviaul
 
-void Newball(short n, short male, list<Cball>  *list1, double fr)
+void Newball(short n, short male, std::list<Cball>  *list1, double fr)
 {
 	long i,j, aa, bb,ab;
 	long *tur;
 	long *ge1,*ge2;
 
-	list<Cball>::iterator individual;
+	std::list<Cball>::iterator individual;
 
 
 	//// creat n individuals and initialize position and sex
@@ -528,12 +528,12 @@ void Newball(short n, short male, list<Cball>  *list1, double fr)
 
 ///// serach for candidate mates
 
-void matingcount (list<Cball>  *clist, list<Cball>::iterator focalindiv,list<Cball>::iterator *matp, long noi,  short matingsize, short *dens)
+void matingcount (std::list<Cball>  *clist, std::list<Cball>::iterator focalindiv,std::list<Cball>::iterator *matp, long noi,  short matingsize, short *dens)
 	{
 			long  i, k,xx, yy, x, y,NM,y2;
 			double  dist,sum,r,dist2;
 			double total_fitness=0;
-			list<Cball>::iterator indiv, mk;
+			std::list<Cball>::iterator indiv, mk;
 		x=focalindiv->xp;// position x for focal female
 		y=focalindiv->yp;// position y for focal female
 		NM=focalindiv->nocandiate;
@@ -593,12 +593,12 @@ void matingcount (list<Cball>  *clist, list<Cball>::iterator focalindiv,list<Cba
 // save the results as afile
 
 
-void SaveF(list<Cball>  *clist,short g,short gg,double md,long n )
+void SaveF(std::list<Cball>  *clist,short g,short gg,double md,long n )
 {
 long  m1,i,ge;
 double m2;
 char ab[12]="File%%%", rch[10]="0000", nots[10]="0000";
-list<Cball>::iterator indiv;
+std::list<Cball>::iterator indiv;
 double m3;
 
 FILE *fp;
@@ -693,11 +693,11 @@ fp=fopen(ab,"w");
  }
 
 
-void SaveA(list<Cball>  *clist,short g,short gg,double md, long n, short clas )
+void SaveA(std::list<Cball>  *clist,short g,short gg,double md, long n, short clas )
 {
 long  m1,m2,i,x;
 char ab[12]="Resl%%%", rch[10]="0000", nots[10]="0000";
-list<Cball>::iterator indiv;
+std::list<Cball>::iterator indiv;
 double m3,m4,w;
 double avfit[322];
 short nof[322];
@@ -769,11 +769,11 @@ for(x=1; x<=clas;x++)
   fclose(fp);
  }
 
-void AssignBucket(list<Cball>  *list1)
+void AssignBucket(std::list<Cball>  *list1)
 {
 short nogx,nogy, xc,yc;
-list<Cball>::iterator indiv;
-//list<Cball>::iterator *mk;
+std::list<Cball>::iterator indiv;
+//std::list<Cball>::iterator *mk;
 
 nogx=xrange/200;//the max number of x dimention of the bucket girds y=3200  x=160
 nogy=yrange/200;//the max number of y dimention of the bucket girds　ｙ=1000 y=5

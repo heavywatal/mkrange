@@ -24,8 +24,8 @@ short sizemating;
 gene genen;
 double reprate;
 
-list<Cball>::iterator mp;
-list<Cball> *alist;
+std::list<Cball>::iterator mp;
+std::list<Cball> *alist;
 double mdispersal, fdispersal,mutationr;
 
 short nogene;
@@ -40,10 +40,10 @@ int  main()
 {
 char a[100];
 
-list<Cball>::iterator individual;
-list<Cball>::iterator *matp;
-alist=new list<Cball>;// creat list for control individuals
-matp=new list<Cball>::iterator[30000+1];// creat array for candidate mates
+std::list<Cball>::iterator individual;
+std::list<Cball>::iterator *matp;
+alist=new std::list<Cball>;// creat list for control individuals
+matp=new std::list<Cball>::iterator[30000+1];// creat array for candidate mates
 indiv=new Cball;// creat new individual
 
 
