@@ -15,7 +15,7 @@ class Cball {
          genotype[nthgene] = gf + gl;
     }
     double ResourceM() const;
-    void nreproduction(std::list<Cball>* ablist, short nogene, double mdis, double fdis, double mr, double nmr);
+    void nreproduction(const Cball& male, std::list<Cball>* ablist, short nogene, double mdis, double fdis, double mr, double nmr);
     void measurefitness(double RR, double gradient, double Vs, double K, double Range, double MS);
 
     short xp, yp, ix, iy, sexi;

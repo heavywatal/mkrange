@@ -6,8 +6,6 @@
 #include "uball.h"
 #include "read_array.hpp"
 
-extern std::list<Cball>::iterator mp;
-
 extern short xrange;
 extern short minxrange;
 extern short yrange;
@@ -32,13 +30,13 @@ double Cball::ResourceM() const {
 }
 
 // reproduction
-void Cball::nreproduction (std::list<Cball>* ablist, short nogene, double mdis, double fdis, double mr, double nmr) {
+void Cball::nreproduction (const Cball& male, std::list<Cball>* ablist, short nogene, double mdis, double fdis, double mr, double nmr) {
     ++nomating;
     const long x = xp;// position x for focal female
     const long y = yp;// position y for focal female
-    const long xx = mp->xp;
-    const long yy = mp->yp;
-    const long y2 = (y >= mp->yp) ? (mp->yp + yrange) : (mp->yp - yrange);
+    const long xx = male.xp;
+    const long yy = male.yp;
+    const long y2 = (y >= male.yp) ? (male.yp + yrange) : (male.yp - yrange);
     const double dist1 = sqrt((x - xx) * (x - xx) + (y - yy) * (y - yy));
     const double dist2 = sqrt((x - xx) * (x - xx) + (y - y2) * (y - y2));
     mdistance = std::min(dist1, dist2);
@@ -56,9 +54,9 @@ void Cball::nreproduction (std::list<Cball>* ablist, short nogene, double mdis, 
                 }
                 gg = randombit();
                 if (gg == 1) {
-                    og2[k] = mp->gene1[k];
+                    og2[k] = male.gene1[k];
                 } else {
-                    og2[k] = mp->gene2[k];
+                    og2[k] = male.gene2[k];
                 }
                 ///////// mutation ////////
                 double mrr = 0.0;

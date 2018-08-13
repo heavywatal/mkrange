@@ -9,8 +9,6 @@
 #include "ucrandom.h"
 #include "uball.h"
 
-std::list<Cball>::iterator mp;
-
 short xrange;
 short minxrange;
 short yrange;
@@ -135,9 +133,10 @@ int main() {
                             const short nofm = matingcount(it, matp, sizemating);
                             if (nofm > 0) {
                                 // if candidate males were not zero
-                                mp = matp[nofm];
+                                const Cball& male = *matp[nofm];
+                                // give birth to young
                                 // mp is a chosen male
-                                it->nreproduction(&alist, nogene, mdispersal, fdispersal,mutationr,nem);// give birth to young
+                                it->nreproduction(male, &alist, nogene, mdispersal, fdispersal, mutationr, nem);
                             }
                         }
                     }
