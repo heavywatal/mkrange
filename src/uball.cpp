@@ -1,6 +1,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <cstdio>
+#include <sstream>
 #include <iostream>
 #include "ucrandom.h"
 #include "uball.h"
@@ -321,30 +322,9 @@ short matingcount (std::list<Cball>::iterator focalindiv, std::list<Cball>::iter
 
 // save the results as afile
 void SaveF(const std::list<Cball>& clist, short g, short gg, long n, short nogene) {
-    char ab[12]="File%%%", rch[10]="0000", nots[10]="0000";
-    FILE* fp;
-    sprintf(rch, "%d", g);
-    sprintf(nots, "%d", gg);
-    if (gg >= 10) {
-        ab[7]  = rch[0];
-        ab[8]  = rch[1];
-        ab[9]  = rch[2];
-        ab[10] = rch[3];
-        ab[11] = rch[4];
-        ab[6]  = 0x2D;
-        ab[4]  = nots[0];
-        ab[5]  = nots[1];
-    }
-    if (gg < 10) {
-        ab[6]  = rch[0];
-        ab[7]  = rch[1];
-        ab[8]  = rch[2];
-        ab[9]  = rch[3];
-        ab[10] = rch[4];
-        ab[5]  = 0x2D;
-        ab[4]  = nots[0];
-    }
-    fp = fopen(ab,"w");
+    std::ostringstream oss;
+    oss << "File" << gg << "-" << g;
+    FILE* fp = fopen(oss.str().c_str(), "w");
     int i = 0;
     for (std::list<Cball>::const_iterator it = clist.begin(); i < n; ++it, ++i) {
         const long m1 = it->sexi;
@@ -360,67 +340,25 @@ void SaveF(const std::list<Cball>& clist, short g, short gg, long n, short nogen
 }
 
 void SaveE(short g, short gg) {
-    char ab[12]="File%%%", rch[10]="0000", nots[10]="0000";
-    FILE* fp;
-    sprintf(rch, "%d", g);
-    sprintf(nots, "%d", gg);
-    if(gg >= 10) {
-        ab[7] = rch[0];
-        ab[8] = rch[1];
-        ab[9] = rch[2];
-        ab[10]= rch[3];
-        ab[11]= rch[4];
-        ab[6] = 0x2D;
-        ab[4] = nots[0];
-        ab[5] = nots[1];
-    }
-    if(gg <10) {
-        ab[6] = rch[0];
-        ab[7] = rch[1];
-        ab[8] = rch[2];
-        ab[9] = rch[3];
-        ab[10]= rch[4];
-        ab[5] = 0x2D;
-        ab[4] = nots[0];
-    }
-    fp = fopen(ab,"w");
+    std::ostringstream oss;
+    oss << "File" << gg << "-" << g;
+    FILE* fp = fopen(oss.str().c_str(), "w");
     short m1 = 0;
     fprintf(fp, "%d", m1);
     fclose(fp);
 }
 
 void SaveA(const std::list<Cball>& clist, short g, short gg, long n, short clas ) {
-    char ab[12]="Resl%%%", rch[10]="0000", nots[10]="0000";
+    std::ostringstream oss;
+    oss << "Resl" << gg << "-" << g;
+    FILE* fp = fopen(oss.str().c_str(), "w");
     double avfit[322];
     short nof[322];
     for (long x = 0; x<= 321; ++x) {
         avfit[x] = 0;
         nof[x] = 0;
     }
-    FILE* fp;
-    sprintf(rch, "%d", g);
-    sprintf(nots, "%d", gg);
-    if (gg >= 10) {
-        ab[7] = rch[0];
-        ab[8] = rch[1];
-        ab[9] = rch[2];
-        ab[10]= rch[3];
-        ab[11]= rch[4];
-        ab[6] = 0x2D;
-        ab[4] = nots[0];
-        ab[5] = nots[1];
-    }
-    if (gg < 10) {
-        ab[6] = rch[0];
-        ab[7] = rch[1];
-        ab[8] = rch[2];
-        ab[9] = rch[3];
-        ab[10]= rch[4];
-        ab[5] = 0x2D;
-        ab[4] = nots[0];
-    }
     const double w = 32000 / (double) clas;
-    fp = fopen(ab,"w");
     for (long x = 1; x <= clas; ++x) {
         int i = 0;
         for (std::list<Cball>::const_iterator it = clist.begin(); i < n; ++it, ++i) {
