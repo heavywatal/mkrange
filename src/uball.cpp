@@ -21,7 +21,7 @@ extern short nloci, nopoly;
 extern double allele_effect;
 extern double reso[21];
 short noindiv[165][7];
-std::list<Cball>::iterator gridindiv[161][6][301];
+std::list<Cball>::iterator gridindiv[162][7][501];
 
 
 //extern short resoN[21],KresoN[21];
@@ -221,12 +221,9 @@ mdistance=dist;
 void Cball::measurefitness(std::list<Cball>  *clist,   double RR, double gradient,double Vs,double K,double Range,double MS)
 {
 //Vs fitness function variance, K carring capacity,
-short  AA, AB, BB,tot,y2,t1,b1,xg,yg,ff,r,t,b,i,j,n,xx,yy,jj[4],sfitness;
-double dist,Sx, dfit,sfit,dist2;
+short tot,y2,t1,b1,xg,yg,ff,r,t,b,i,j,n,xx,yy,jj[4],sfitness;
+double dist,dfit,sfit,dist2;
 tot=0;
-AA=0;
-AB=0;
-BB=0;
 
 std::list<Cball>::iterator indiv;
 t1=0;
@@ -303,18 +300,18 @@ for(i=ff;i<=r;i++)
 
 */
 
-	AA=xrange/2-xmi;
-	BB=xma-xrange/2;
-
 
 //// calculate fitness
-
-if(ix >= xrange/2 - AA && ix <= xrange/2 + BB )Sx=16+gradient*(xrange/2-4000);
-if(ix < xrange/2 - AA)Sx=16+gradient*(ix-4000+AA);
-if(ix > xrange/2 + BB)Sx=16+gradient*(ix-4000-BB);
-
-
-
+double Sx = 0.0;
+if (xmi > 0 || xma > 0) {// BK
+    int AA = xrange / 2 - xmi;
+    int BB = xma - xrange / 2;
+    if (ix >= xrange / 2 - AA && ix <= xrange / 2 + BB ) Sx = 16 + gradient * (xrange / 2 - 4000);
+    if (ix < xrange / 2 - AA) Sx = 16 + gradient * (ix - 4000 + AA);
+    if (ix > xrange / 2 + BB) Sx = 16 + gradient * (ix - 4000 - BB);
+} else {// 2008BK
+    Sx = 64 + gradient * (ix - 16000) * (ix - 16000) * (ix - 16000) / 1000000.;
+}
 dfitness=2+RR*(1-tot/K)-(Sx-ResourceM())*(Sx-ResourceM())/(2*Vs);
 if(dfitness <=0) dfitness=0;
 
@@ -385,8 +382,45 @@ void Newball(short n, short male, std::list<Cball>  *list1, double fr)
 			individual->Igene(j,aa,bb);
 		}
 	}
+}
 
-	/*
+
+void Newball2008(short n, short male, std::list<Cball>  *list1, double fr)
+{
+ short i,j,xx,yy, aa, bb,ab;
+ short *tur;
+ short *ge1,*ge2;
+
+	std::list<Cball>::iterator individual;
+
+ge1=new short[n+1];
+ge2=new short[n+1];
+tur=new short[n+1];
+
+
+	//// creat n individuals and initialize position and sex
+for(i=1;i<=n-male;i++)
+	 	{
+ 	xx=rndfrom1(500)+xrange/2-250;// random number for
+ 	 yy=rndfrom1(yrange);
+	 indiv->Iball(xx,yy,0);
+  	list1->push_back(*indiv);
+  		}
+ for(i=1;i<=male;i++)
+	 	{
+ 	//xx=rndfrom1(500)+3750;
+ 	xx=rndfrom1(500)+xrange/2-250;
+ 	 yy=rndfrom1(yrange);
+    indiv->Iball(xx,yy,1);
+    list1->push_back(*indiv);
+  		}
+
+aa=rounds(fr*fr*n);
+ab=rounds(fr*(1-fr)*2*n);
+bb=rounds((1-fr)*(1-fr)*n);
+
+	//////////// set genes for  resource use ///////
+
 for( j=1;j<=10;j++)
 		{
 		 GerateRandomperm (n, tur);
@@ -420,11 +454,7 @@ for( j=11+(nloci-nopoly)/2+nopoly;j<=10+nloci;j++)
 	delete tur;
 	delete ge1;
 	delete ge2;
-	 */
-
-
 }
-
 
 
 ///// serach for candidate mates

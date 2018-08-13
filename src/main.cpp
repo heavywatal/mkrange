@@ -138,9 +138,12 @@ for(gggg=1;gggg<=norepeat;gggg++)// repeat
 randomizec();// initialize random number  (short type)
 lrandomizec();// initialize random number (long type
 
-
-Newball(no, nomale, alist,  0.5);// Creat individuals
-
+// Creat individuals
+if (xmi > 0 || xma > 0) {
+    Newball(no, nomale, alist,  0.5);
+} else {
+    Newball2008(no, nomale, alist,  0.5);
+}
 
 
 for (y=1;y<=nogeneration;y++)// Generation
