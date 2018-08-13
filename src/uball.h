@@ -1,12 +1,12 @@
-#include "uglobal.h"
 #include <cstdio>
 #include <list>
 
 class Cball {
+    typedef short gene[140];
   public:
-    short xp, yp, ix, iy, homerangesize, sexi, mx, my;
-    short encounter, nomating, mateP, nocandiate;//mother,
-    double ResouceP, MatingP, ChoiceP, ReprodIsolP, fitness, dfitness, mdistance;
+    short xp, yp, ix, iy, sexi;
+    short nomating, nocandiate;
+    double fitness, dfitness, mdistance;
     gene gene1, gene2, genotype;
     std::list<Cball>::iterator candidatemate[1500];
     void Iball(short x, short y, short s);
@@ -16,7 +16,7 @@ class Cball {
     void measurefitness(double RR, double gradient, double Vs, double K, double Range, double MS);
 };
 
-void Newball(short n, std::list<Cball>* list1);
+void Newball(std::list<Cball>* list1);
 void Newball2008(short n, short male, std::list<Cball>* list1, double fr);
 void matingcount(std::list<Cball>::iterator focalindiv, std::list<Cball>::iterator* matp, short matingsize, short* dens);
 void SaveF(std::list<Cball>* clist, short g, short gg, long n, short nogene);

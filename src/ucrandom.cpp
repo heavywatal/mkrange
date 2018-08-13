@@ -1,5 +1,3 @@
-
-#include "uglobal.h"
 #include "ucrandom.h"
 #include <cmath>
 #include <ctime>
