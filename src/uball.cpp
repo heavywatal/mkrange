@@ -218,11 +218,11 @@ mdistance=dist;
 
 
 // calculate fitness
-void Cball::measurefitness(std::list<Cball>  *clist,   double RR, double gradient,double Vs,double K,double Range,double MS)
+void Cball::measurefitness(double RR, double gradient,double Vs,double K,double Range,double MS)
 {
 //Vs fitness function variance, K carring capacity,
-short tot,y2,t1,b1,xg,yg,ff,r,t,b,i,j,n,xx,yy,jj[4],sfitness;
-double dist,dfit,sfit,dist2;
+short tot,y2,t1,b1,xg,yg,ff,r,t,b,i,j,n,xx,yy,jj[4];
+double dist,dist2;
 tot=0;
 
 std::list<Cball>::iterator indiv;
@@ -288,18 +288,6 @@ for(i=ff;i<=r;i++)
 		 }
 		}
 
-// count number of individual within the range
-/*for(indiv=clist->begin();indiv !=clist->end();indiv++)
-			{
-			if (iy >= indiv->yp)y2=yrange + indiv->yp;else y2=indiv->yp - yrange;
-			 dist=sqrt((ix-indiv->xp)*(ix-indiv->xp)+(iy-indiv->yp)*(iy-indiv->yp));
-			 dist2=sqrt((ix-indiv->xp)*(ix-indiv->xp)+(iy-y2)*(iy-y2));
-			 if(dist > dist2) dist=dist2;
-				if (dist <= Range )tot++;
-			 }
-
-*/
-
 
 //// calculate fitness
 double Sx = 0.0;
@@ -317,8 +305,6 @@ if(dfitness <=0) dfitness=0;
 
 
 fitness=prnd(dfitness);
-//if(urnd() <= dfit) fitness=sfit+1;else fitness=sfit;// change double fit to integer fitness
-//if(dfitness <=0) dfitness=0;
 
 
 }//endomethod;
@@ -332,9 +318,9 @@ fitness=prnd(dfitness);
 
 // Create new indiviaul
 
-void Newball(short n, short male, std::list<Cball>  *list1, double fr)
+void Newball(short n, std::list<Cball>  *list1)
 {
-	long i,j, aa, bb,ab;
+	long j, aa, bb;
 
 	std::list<Cball>::iterator individual;
 
@@ -459,7 +445,7 @@ for( j=11+(nloci-nopoly)/2+nopoly;j<=10+nloci;j++)
 
 ///// serach for candidate mates
 
-void matingcount (std::list<Cball>  *clist, std::list<Cball>::iterator focalindiv,std::list<Cball>::iterator *matp, long noi,  short matingsize, short *dens)
+void matingcount (std::list<Cball>::iterator focalindiv,std::list<Cball>::iterator *matp, short matingsize, short *dens)
 	{
 			long  i, k,xx, yy, x, y,NM,y2;
 			double  dist,sum,r,dist2;
@@ -524,7 +510,7 @@ void matingcount (std::list<Cball>  *clist, std::list<Cball>::iterator focalindi
 // save the results as afile
 
 
-void SaveF(std::list<Cball>  *clist,short g,short gg,double md,long n )
+void SaveF(std::list<Cball>  *clist,short g,short gg, long n )
 {
 long  m1,i,ge;
 double m2;
@@ -559,14 +545,12 @@ ab[4]=nots[0];
 }
 
 fp=fopen(ab,"w");
-// fprintf(fp, "%7.3f", md);
-//  fprintf(fp, "\n");
 for(indiv=clist->begin(), i=1;i<=n;indiv++,i++)
 	{
    m1=indiv->sexi;
    m2=indiv->ResourceM();
   if(m1==0) m3=indiv->fitness; else m3=indiv->dfitness;
-    fprintf(fp, "%d\t %d\t %d\t %f\t  %7.3f\t", indiv->xp, indiv->yp,m1, m2, m3);
+    fprintf(fp, "%d\t %d\t %ld\t %f\t  %7.3f\t", indiv->xp, indiv->yp,m1, m2, m3);
 
    for(ge=1;ge<=nogene;ge++)
         fprintf(fp, "%d\t ", indiv->gene1[ge]+ indiv->gene2[ge]);
@@ -624,7 +608,7 @@ fp=fopen(ab,"w");
  }
 
 
-void SaveA(std::list<Cball>  *clist,short g,short gg,double md, long n, short clas )
+void SaveA(std::list<Cball>  *clist,short g,short gg, long n, short clas )
 {
 long  m1,m2,i,x;
 char ab[12]="Resl%%%", rch[10]="0000", nots[10]="0000";
@@ -668,8 +652,6 @@ w=32000/(double) clas;
 
 
 fp=fopen(ab,"w");
-//  fprintf(fp, "%7.3f", md);
-// fprintf(fp, "\n");
 for(x=1; x<=clas;x++)
 {
 	for(indiv=clist->begin(), i=1;i<=n;indiv++,i++)
@@ -693,7 +675,7 @@ for(x=1; x<=clas;x++)
   	 m2=w*x;
    	m3=nof[x];
   	 if (nof[x]==0) m4=0; else m4= avfit[x]/(double)nof[x];
-	   fprintf(fp, "%d\t %d\t %7.4f\t %7.4f\t",m1, m2, m3, m4);
+	   fprintf(fp, "%ld\t %ld\t %7.4f\t %7.4f\t",m1, m2, m3, m4);
 	  fprintf(fp, "\n");
   }
 

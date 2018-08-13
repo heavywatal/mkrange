@@ -17,7 +17,6 @@ double v1,v2,v3,v4,v5,v6,v7,v8,v9,v10;
 double v11,v12,v13,v14,v15,v16,v17,v18,v19,v20;
 /**********************************************/
 extern short xrange,yrange, minxrange, generation, homeranges,xmi,xma;
-extern long no;
 double mutationrate,Vp,CC,revar[51],revar2[51];
 short sizemating;
 gene genen;
@@ -140,7 +139,7 @@ lrandomizec();// initialize random number (long type
 
 // Creat individuals
 if (xmi > 0 || xma > 0) {
-    Newball(no, nomale, alist,  0.5);
+    Newball(no, alist);
 } else {
     Newball2008(no, nomale, alist,  0.5);
 }
@@ -194,7 +193,7 @@ if ( itemP > 0 )// itemP= number of individuals
 lrandomizec();}
  	for(individual=alist->begin();individual!=alist->end();individual++)// Measure fitness for each individual
 	{
-     individual->measurefitness( alist, reprate,  G, VS, CC,homeranges,sizemating);
+     individual->measurefitness(reprate,  G, VS, CC,homeranges,sizemating);
  	}
 
 
@@ -210,7 +209,7 @@ lrandomizec();}
  	if(individual->sexi==0 && individual->fitness > 0)// choose female having nonzero fitness
  		{
  		// Search candidate mates :
- 		matingcount(alist, individual,matp,itemP, sizemating, &nofm);// female search candidate mates
+ 		matingcount(individual,matp, sizemating, &nofm);// female search candidate mates
 
  		if(nofm != 0)// if candidate males were not zero
  		{
@@ -225,8 +224,8 @@ lrandomizec();}
  	 item=alist->size();
  		if(y % genS ==0 || y==1)
  		{
- 		SaveF( alist, y,gggg,mdis,itemP);
- 		SaveA( alist,y,gggg,mdis, itemP,noclas);
+ 		SaveF( alist, y,gggg, itemP);
+ 		SaveA( alist,y,gggg, itemP,noclas);
  		}
 
  	mdis=0;
