@@ -158,7 +158,7 @@ if (y==1 )
 
  if ( y % 2 ==0)
 	 {
-  	 std::cout << "Gener = " << y << ":Repeat = " << gggg << "No= " << itemP << "Min(x)=" << minx << "Max(x)=" << maxx << std::endl;
+  	 std::cout << "Gener = " << y << ":Repeat = " << gggg << "No=	" << itemP <<"	Min(x)=	" << minx << "	Max(x)=	" << maxx << std::endl;
 	// print no of generations and no of individuals
 	leftp=0;
 	rightp=0;
@@ -215,7 +215,7 @@ lrandomizec();}
 
  	 }
  	 item=alist->size();
- 		if(y % genS ==0 )
+ 		if(y % genS ==0 || y==1)
  		{
  		SaveF( alist, y,gggg,mdis,itemP);
  		SaveA( alist,y,gggg,mdis, itemP,noclas);

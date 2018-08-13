@@ -4,12 +4,7 @@
 #include <iostream>
 #include "ucrandom.h"
 #include "uball.h"
-#include <fstream>
-#include <vector>
-#include <string>
-
 #include "read_array.hpp"
-
 
 extern short *Fresource;
 extern short nogene,rn,doend;
@@ -342,8 +337,6 @@ fitness=prnd(dfitness);
 void Newball(short n, short male, std::list<Cball>  *list1, double fr)
 {
 	long i,j, aa, bb,ab;
-	long *tur;
-	long *ge1,*ge2;
 
 	std::list<Cball>::iterator individual;
 
@@ -352,18 +345,11 @@ void Newball(short n, short male, std::list<Cball>  *list1, double fr)
 	std::vector<std::vector<int> > vecvecint;
 	vecvecint = read_int_array("TestInput.txt");
 	n=vecvecint.size();
-	//std::cout << n << std::endl;
-
 	nloci=	vecvecint[0].size()-3;
-
-	//std::cout << nloci << std::endl;
-
 	for (size_t row=0; row<vecvecint.size(); ++row) {
 		indiv->Iball(vecvecint[row][0],vecvecint[row][1],vecvecint[row][2]);
-
 		for (size_t col=3; col<vecvecint[row].size(); ++col)
 		{
-
 			if(vecvecint[row][col]==0)indiv->Igene(col+8,0, 0);
 			if(vecvecint[row][col]==2)indiv->Igene(col+8,1, 1);
 			if(vecvecint[row][col]==1){
@@ -374,19 +360,10 @@ void Newball(short n, short male, std::list<Cball>  *list1, double fr)
 				{
 					indiv->Igene(col+8,0, 1);
 				}
-
 			}
 		}
 		list1->push_back(*indiv);
-
-
-
 	}
-
-
-	//aa=rounds(fr*fr*n);
-	//ab=rounds(fr*(1-fr)*2*n);
-	//bb=rounds((1-fr)*(1-fr)*n);
 
 	//////////// set genes for  resource use ///////
 
@@ -407,119 +384,42 @@ void Newball(short n, short male, std::list<Cball>  *list1, double fr)
 			individual->Igene(j,aa,bb);
 		}
 	}
-	//std::cout << "006" << std::endl;
+
 	/*
+for( j=1;j<=10;j++)
+		{
+		 GerateRandomperm (n, tur);
+		 for(i=1;i<=aa;i++){ ge1[tur[i]]=1;ge2[tur[i]]=1;}
+		 for(i=aa+1;i<=aa+ab;i++){ ge1[tur[i]]=1;ge2[tur[i]]=0;}
+		 for(i=aa+ab+1;i<=n;i++){ ge1[tur[i]]=0;ge2[tur[i]]=0;}
+		 for(individual=list1->begin(),i=1;individual!=list1->end();individual++,i++)
+		individual->Igene(j,ge1[i],ge2[i]);
+		}
 
-	 for( j=1;j<=10;j++)
-	 {
-	 GerateRandomperm (n, tur);
-	 for(i=1;i<=aa;i++){ ge1[tur[i]]=1;ge2[tur[i]]=1;}
-	 for(i=aa+1;i<=aa+ab;i++){ ge1[tur[i]]=1;ge2[tur[i]]=0;}
-	 for(i=aa+ab+1;i<=n;i++){ ge1[tur[i]]=0;ge2[tur[i]]=0;}
-	 for(individual=list1->begin(),i=1;individual!=list1->end();individual++,i++)
-	 individual->Igene(j,ge1[i],ge2[i]);
-	 }
-	 for( j=11;j<=10+(nloci-nopoly)/2;j++)
-	 {
-	 for(individual=list1->begin();individual!=list1->end();individual++)
-	 individual->Igene(j,1, 1);
-	 }
-	 for( j=11+(nloci-nopoly)/2;j<=10+(nloci-nopoly)/2+nopoly;j++)/// genes 1 and 0 at 3  loci  are randomly allocated for all the  individuals
-	 {
-	 GerateRandomperm (n, tur);
-	 for(i=1;i<=aa;i++){ ge1[tur[i]]=1;ge2[tur[i]]=1;}
-	 for(i=aa+1;i<=aa+ab;i++){ ge1[tur[i]]=1;ge2[tur[i]]=0;}
-	 for(i=aa+ab+1;i<=n;i++){ ge1[tur[i]]=0;ge2[tur[i]]=0;}
-	 for(individual=list1->begin(),i=1;individual!=list1->end();individual++,i++)
-	 individual->Igene(j,ge1[i],ge2[i]);
-	 }
-	 for( j=11+(nloci-nopoly)/2+nopoly;j<=10+nloci;j++)
-	 {
-	 for(individual=list1->begin();individual!=list1->end();individual++)
-	 individual->Igene(j,0, 0);
-	 }
+for( j=11;j<=10+(nloci-nopoly)/2;j++)
+		{
+		for(individual=list1->begin();individual!=list1->end();individual++)
+			individual->Igene(j,1, 1);
+		}
+for( j=11+(nloci-nopoly)/2;j<=10+(nloci-nopoly)/2+nopoly;j++)/// genes 1 and 0 at 3  loci  are randomly allocated for all the  individuals
+		{
+		 GerateRandomperm (n, tur);
+		 for(i=1;i<=aa;i++){ ge1[tur[i]]=1;ge2[tur[i]]=1;}
+		 for(i=aa+1;i<=aa+ab;i++){ ge1[tur[i]]=1;ge2[tur[i]]=0;}
+		 for(i=aa+ab+1;i<=n;i++){ ge1[tur[i]]=0;ge2[tur[i]]=0;}
+		 for(individual=list1->begin(),i=1;individual!=list1->end();individual++,i++)
+			individual->Igene(j,ge1[i],ge2[i]);
+		}
+for( j=11+(nloci-nopoly)/2+nopoly;j<=10+nloci;j++)
+		{
+		for(individual=list1->begin();individual!=list1->end();individual++)
+			individual->Igene(j,0, 0);
+		}
 
-
-	 /// set genes for mate recognition
-	 for( j=11;j<=12;j++)
-	 {
-	 for(individual=list1->begin();individual!=list1->end();individual++)
-	 individual->Igene(j,1, 1);
-	 }
-	 for( j=13;j<=16;j++)/// genes 1 and 0 at 4  loci  are randomly allocated for all the  individuals
-	 {
-	 GerateRandomperm (n, tur);
-	 for(i=1;i<=aa;i++){ ge1[tur[i]]=1;ge2[tur[i]]=1;}
-	 for(i=aa+1;i<=aa+ab;i++){ ge1[tur[i]]=1;ge2[tur[i]]=0;}
-	 for(i=aa+ab+1;i<=n;i++){ ge1[tur[i]]=0;ge2[tur[i]]=0;}
-	 for(individual=list1->begin(),i=1;individual!=list1->end();individual++,i++)
-	 individual->Igene(j,ge1[i],ge2[i]);
-
-	 }
-	 for( j=17;j<=20;j++)
-	 {
-	 for(individual=list1->begin();individual!=list1->end();individual++)
-	 individual->Igene(j,0, 0);
-	 }
-
-	 ///morph for choice
-	 for( j=21;j<=22;j++)
-	 {
-	 for(individual=list1->begin();individual!=list1->end();individual++)
-	 individual->Igene(j,1, 1);
-	 }
-	 for( j=23;j<=26;j++)/// genes 1 and 0 at 4  loci  are randomly allocated for all the  individuals
-	 {
-	 GerateRandomperm (n, tur);
-	 for(i=1;i<=aa;i++){ ge1[tur[i]]=1;ge2[tur[i]]=1;}
-	 for(i=aa+1;i<=aa+ab;i++){ ge1[tur[i]]=1;ge2[tur[i]]=0;}
-	 for(i=aa+ab+1;i<=n;i++){ ge1[tur[i]]=0;ge2[tur[i]]=0;}
-	 for(individual=list1->begin(),i=1;individual!=list1->end();individual++,i++)
-	 individual->Igene(j,ge1[i],ge2[i]);
-	 }
-	 for( j=27;j<=30;j++)
-	 {
-	 for(individual=list1->begin();individual!=list1->end();individual++)
-	 individual->Igene(j,0, 0);
-	 }
-
-	 ///  selectivity
-
-	 for( j=31;j<=32;j++)/// genes 1 and 0 at 2  loci  are randomly allocated for all the  individuals
-	 {
-	 GerateRandomperm (n, tur);
-	 for(i=1;i<=aa;i++){ ge1[tur[i]]=1;ge2[tur[i]]=1;}
-	 for(i=aa+1;i<=aa+ab;i++){ ge1[tur[i]]=1;ge2[tur[i]]=0;}
-	 for(i=aa+ab+1;i<=n;i++){ ge1[tur[i]]=0;ge2[tur[i]]=0;}
-	 for(individual=list1->begin(),i=1;individual!=list1->end();individual++,i++)
-	 individual->Igene(j,ge1[i],ge2[i]);
-	 }
-	 for( j=33;j<=40;j++)
-	 {
-	 for(individual=list1->begin();individual!=list1->end();individual++)
-	 individual->Igene(j,0, 0);
-	 }
-
-	 ///// repro iso
-
-	 for( j=41;j<=50;j++)
-	 {
-	 for(individual=list1->begin();individual!=list1->end();individual++)
-	 individual->Igene(j,1, 10);
-	 }
-	 for( j=51;j<=60;j++)
-	 {
-	 for(individual=list1->begin();individual!=list1->end();individual++)
-	 individual->Igene(j,0, 0);
-	 }
-
+	delete tur;
+	delete ge1;
+	delete ge2;
 	 */
-
-
-
-	//	delete tur;
-	//delete ge1;
-	//	delete ge2;
 
 
 }

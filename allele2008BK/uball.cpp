@@ -334,16 +334,16 @@ void Newball(short n, short male, std::list<Cball>  *list1, double fr)
  short *tur;
  short *ge1,*ge2;
 
-std::list<Cball>::iterator individual;
+	std::list<Cball>::iterator individual;
+
 ge1=new short[n+1];
 ge2=new short[n+1];
-
 tur=new short[n+1];
-//// creat n individuals and initialize position and sex
 
+
+	//// creat n individuals and initialize position and sex
 for(i=1;i<=n-male;i++)
 	 	{
-
  	xx=rndfrom1(500)+xrange/2-250;// random number for
  	 yy=rndfrom1(yrange);
 	 indiv->Iball(xx,yy,0);
@@ -358,12 +358,12 @@ for(i=1;i<=n-male;i++)
     list1->push_back(*indiv);
   		}
 
-
 aa=rounds(fr*fr*n);
 ab=rounds(fr*(1-fr)*2*n);
 bb=rounds((1-fr)*(1-fr)*n);
 
-//////////// set genes for  resource use ///////
+	//////////// set genes for  resource use ///////
+
 for( j=1;j<=10;j++)
 		{
 		 GerateRandomperm (n, tur);
@@ -394,90 +394,13 @@ for( j=11+(nloci-nopoly)/2+nopoly;j<=10+nloci;j++)
 			individual->Igene(j,0, 0);
 		}
 
-/*
-/// set genes for mate recognition
-for( j=11;j<=12;j++)
-		{
-		for(individual=list1->begin();individual!=list1->end();individual++)
-			individual->Igene(j,1, 1);
-		}
-for( j=13;j<=16;j++)/// genes 1 and 0 at 4  loci  are randomly allocated for all the  individuals
-		{
-		GerateRandomperm (n, tur);
-		 for(i=1;i<=aa;i++){ ge1[tur[i]]=1;ge2[tur[i]]=1;}
-		 for(i=aa+1;i<=aa+ab;i++){ ge1[tur[i]]=1;ge2[tur[i]]=0;}
-		 for(i=aa+ab+1;i<=n;i++){ ge1[tur[i]]=0;ge2[tur[i]]=0;}
-		 for(individual=list1->begin(),i=1;individual!=list1->end();individual++,i++)
-			individual->Igene(j,ge1[i],ge2[i]);
-
-		}
-for( j=17;j<=20;j++)
-		{
-		for(individual=list1->begin();individual!=list1->end();individual++)
-			individual->Igene(j,0, 0);
-		}
-
-///morph for choice
-for( j=21;j<=22;j++)
-		{
-		for(individual=list1->begin();individual!=list1->end();individual++)
-			individual->Igene(j,1, 1);
-		}
-for( j=23;j<=26;j++)/// genes 1 and 0 at 4  loci  are randomly allocated for all the  individuals
-		{
-		GerateRandomperm (n, tur);
-		 for(i=1;i<=aa;i++){ ge1[tur[i]]=1;ge2[tur[i]]=1;}
-		 for(i=aa+1;i<=aa+ab;i++){ ge1[tur[i]]=1;ge2[tur[i]]=0;}
-		 for(i=aa+ab+1;i<=n;i++){ ge1[tur[i]]=0;ge2[tur[i]]=0;}
-		 for(individual=list1->begin(),i=1;individual!=list1->end();individual++,i++)
-			individual->Igene(j,ge1[i],ge2[i]);
-		}
-for( j=27;j<=30;j++)
-		{
-		for(individual=list1->begin();individual!=list1->end();individual++)
-			individual->Igene(j,0, 0);
-		}
-
-///  selectivity
-
-for( j=31;j<=32;j++)/// genes 1 and 0 at 2  loci  are randomly allocated for all the  individuals
-		{
-		GerateRandomperm (n, tur);
-		 for(i=1;i<=aa;i++){ ge1[tur[i]]=1;ge2[tur[i]]=1;}
-		 for(i=aa+1;i<=aa+ab;i++){ ge1[tur[i]]=1;ge2[tur[i]]=0;}
-		 for(i=aa+ab+1;i<=n;i++){ ge1[tur[i]]=0;ge2[tur[i]]=0;}
-		 for(individual=list1->begin(),i=1;individual!=list1->end();individual++,i++)
-			individual->Igene(j,ge1[i],ge2[i]);
-		}
-for( j=33;j<=40;j++)
-		{
-		for(individual=list1->begin();individual!=list1->end();individual++)
-			individual->Igene(j,0, 0);
-		}
-
-///// repro iso
-
-for( j=41;j<=50;j++)
-		{
-		for(individual=list1->begin();individual!=list1->end();individual++)
-			individual->Igene(j,1, 10);
-		}
-for( j=51;j<=60;j++)
-		{
-		for(individual=list1->begin();individual!=list1->end();individual++)
-			individual->Igene(j,0, 0);
-		}
-
-*/
-
-
-
 	delete tur;
 	delete ge1;
 	delete ge2;
 
 
- }
+}
+
 
 
 ///// serach for candidate mates
