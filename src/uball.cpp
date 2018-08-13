@@ -16,8 +16,7 @@ extern short nloci;
 extern short nopoly;
 extern double allele_effect;
 
-short noindiv[165][7];
-std::list<Cball>::iterator gridindiv[162][7][501];
+std::vector<std::list<Cball>::iterator> gridindiv[162][7];
 
 // calculate resouce use phenotypes from the genotype
 double Cball::ResourceM() const {
@@ -132,9 +131,10 @@ void Cball::measurefitness(double RR, double gradient, double Vs, double K, doub
     short tot = 0;
     for (short i = ff; i <= r; ++i) {
         for (short j = 1; j <= 3; ++j) {
-            for (short n = 1; n <= noindiv[i][jj[j]]; ++n) {
-                const short xx = gridindiv[i][jj[j]][n]->xp;
-                const short yy = gridindiv[i][jj[j]][n]->yp;
+            const std::vector<std::list<Cball>::iterator> grid_ij = gridindiv[i][jj[j]];
+            for (size_t k = 0; k < grid_ij.size(); ++k) {
+                const short xx = grid_ij[k]->xp;
+                const short yy = grid_ij[k]->yp;
                 short y2 = 0;
                 if (iy >= yy) {
                     y2 = yy + yrange;
@@ -149,11 +149,11 @@ void Cball::measurefitness(double RR, double gradient, double Vs, double K, doub
                     ++tot;
                 }
                 // count number of mailes within the ara of radius 200
-                if (sexi == 0 && dist <= MS && gridindiv[i][jj[j]][n]->sexi == 1) {
+                if (sexi == 0 && dist <= MS && grid_ij[k]->sexi == 1) {
                     // if this individul is female and called individual is male and if the distance between them is less than 200, then the called individual is recored as candidate males.
                     ++nocandiate;
                     // store the canditate males
-                    candidatemate[nocandiate] = gridindiv[i][jj[j]][n];
+                    candidatemate[nocandiate] = grid_ij[k];
                 }
             }
         }
@@ -452,13 +452,12 @@ void AssignBucket(std::list<Cball>* list1) {
     for (size_t xc = 0; xc <= nogx; ++xc) {
         for (size_t yc = 0; yc <= nogy; ++yc) {
             //Initialize the array of the number of individuals in a bucket grid xc yc
-            noindiv[xc][yc] = 0;
+            gridindiv[xc][yc].clear();
         }
     }
     for (std::list<Cball>::iterator it = list1->begin(); it != list1->end(); ++it) {
         const size_t xc = ceil(it->xp / 200.);
         const size_t yc = ceil(it->yp / 200.);
-        noindiv[xc][yc] += 1;// count the number of individual in a bucket
-        gridindiv[xc][yc][noindiv[xc][yc]] = it;//store the individuals into the array
+        gridindiv[xc][yc].push_back(it);//store the individuals into the array
     }
 }
