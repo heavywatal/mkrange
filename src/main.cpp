@@ -8,10 +8,8 @@
 #include <list>
 #include "ucrandom.h"
 #include "uball.h"
-#include <unistd.h>
 
 std::list<Cball>::iterator mp;
-Cball *indiv;
 
 short xrange;
 short minxrange;
@@ -25,12 +23,7 @@ double allele_effect;
 
 
 int main() {
-    std::list<Cball>* alist = new std::list<Cball>;// creat list for control individuals
     std::list<Cball>::iterator* matp = new std::list<Cball>::iterator[30000+1];// creat array for candidate mates
-    indiv = new Cball;// creat new individual
-    char name_dir[64];
-    getcwd(name_dir, 64);// get current directly
-    chdir(name_dir);// change to current directly
     randomizec();
     lrandomizec();
     int UNUSED;
@@ -96,17 +89,18 @@ int main() {
         for (short gggg = 1; gggg <= norepeat; ++gggg) {
             randomizec();// initialize random number (short type)
             lrandomizec();// initialize random number (long type)
+            std::list<Cball> alist;// creat list for control individuals
             // Creat individuals
             if (xmi > 0 || xma > 0) {
-                Newball(alist);
+                Newball(&alist);
             } else {
-                Newball2008(no, nomale, alist, 0.5);
+                Newball2008(no, nomale, &alist, 0.5);
             }
             long minx = 0;
             long maxx = 0;
             for (long y = 1; y <= nogeneration; ++y) {// Generation
-                AssignBucket(alist);
-                size_t itemP = alist->size();// check number of individuals
+                AssignBucket(&alist);
+                const size_t itemP = alist.size();// check number of individuals
                 if (itemP <= 0) {
                     SaveE(prep, gggg);
                     y = nogeneration;
@@ -124,51 +118,48 @@ int main() {
                         lrandomizec();
                     }
                     // Measure fitness for each individual
-                    std::list<Cball>::iterator individual;
-                    for (individual = alist->begin(); individual != alist->end(); ++individual) {
-                        individual->measurefitness(reprate, G, VS, CC, homeranges, sizemating);
+                    for (std::list<Cball>::iterator it = alist.begin(); it != alist.end(); ++it) {
+                        it->measurefitness(reprate, G, VS, CC, homeranges, sizemating);
                     }
                     // reproduced by females /////
                     maxx = 0;
                     minx = 40000;
-                    itemP = alist->size();
-                    individual = alist->begin();
-                    for (size_t i = 1; i<= itemP; ++i, ++individual) {
-                        if (individual->xp > maxx) maxx = individual->xp;
-                        if (individual->xp < minx) minx = individual->xp;
-                        if (individual->sexi == 0 && individual->fitness > 0) {
+                    const size_t num_parents = alist.size();
+                    for (std::list<Cball>::iterator it = alist.begin(); it != alist.end(); ++it) {
+                        if (it->xp > maxx) maxx = it->xp;
+                        if (it->xp < minx) minx = it->xp;
+                        if (it->sexi == 0 && it->fitness > 0) {
                             // choose female having nonzero fitness
                             // Search candidate mates :
                             // female search candidate mates
-                            short nofm = 0;
-                            matingcount(individual, matp, sizemating, &nofm);
-                            if (nofm != 0) {
+                            const short nofm = matingcount(it, matp, sizemating);
+                            if (nofm > 0) {
                                 // if candidate males were not zero
                                 mp = matp[nofm];
                                 // mp is a chosen male
-                                individual->nreproduction (alist, nogene, mdispersal, fdispersal,mutationr,nem);// give birth to young
+                                it->nreproduction(&alist, nogene, mdispersal, fdispersal,mutationr,nem);// give birth to young
                             }
                         }
                     }
                     if (y % genS == 0 || y == 1) {
-                        SaveF(alist, y, gggg, itemP, nogene);
-                        SaveA(alist, y, gggg, itemP, noclas);
+                        // NOTE: save only parents?
+                        SaveF(alist, y, gggg, num_parents, nogene);
+                        SaveA(alist, y, gggg, num_parents, noclas);
                     }
                     double mdis = 0.0;
                     size_t nn = 0;
-                    individual = alist->begin();
-                    for (size_t i = 1; i <= itemP; ++i) {
+                    std::list<Cball>::iterator individual = alist.begin();
+                    for (size_t i = 1; i <= num_parents; ++i) {
                         if (individual->sexi == 0 && individual->fitness > 0) {
                             mdis += individual->mdistance*individual->mdistance;
                             ++nn;
                         }
-                        individual = alist->erase(individual);// crear parents
+                        individual = alist.erase(individual);// crear parents
                     }
                     mdis = sqrt(mdis / (double)nn);
                     //NOTE: mdis is not used!!
                 }
             }// y no generation
-            alist->clear();// clear all individuals
         }
     }
     std::cout << "x=" << xrange

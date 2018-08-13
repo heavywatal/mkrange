@@ -7,7 +7,6 @@
 #include "read_array.hpp"
 
 extern std::list<Cball>::iterator mp;
-extern Cball* indiv;
 
 extern short xrange;
 extern short minxrange;
@@ -22,27 +21,8 @@ extern double allele_effect;
 short noindiv[165][7];
 std::list<Cball>::iterator gridindiv[162][7][501];
 
-// initialize position, sex, and fitness;
-void Cball::Iball(short x, short y, short s) {
-    sexi = s;
-    xp = x;
-    ix = x;
-    yp = y;
-    iy = y;
-    fitness = 0;
-    nomating = 0;
-    nocandiate = 0;
-}
-
-// initialize genes
-void Cball::Igene(short nthgene, short gf, short gl) {
-     gene1[nthgene] = gf;
-     gene2[nthgene] = gl;
-     genotype[nthgene] = gf + gl;
-}
-
 // calculate resouce use phenotypes from the genotype
-double Cball::ResourceM() {
+double Cball::ResourceM() const {
     double sum = 0;
     for (int i = 11; i <= 10 + nloci; ++i) {
         sum += allele_effect * (gene1[i] + gene2[i]);
@@ -117,11 +97,11 @@ void Cball::nreproduction (std::list<Cball>* ablist, short nogene, double mdis, 
                 if (ny <= 0) ny = yrange + ny;
             } while ((nx <= minxrange) || (nx > xrange ) || (ny <= 0) || (ny > yrange));
             // Initialize offspring position and sex
-            indiv->Iball(nx, ny, gg);
+            Cball child(nx, ny, gg);
             for (short i = 1; i <= nogene; ++i) {
-                indiv->Igene(i, og1[i], og2[i]);// offspring genes
+                child.Igene(i, og1[i], og2[i]);// offspring genes
             }
-            ablist->push_back(*indiv);// add offspring the list
+            ablist->push_back(child);// add offspring the list
         }
     }
 }
@@ -202,19 +182,19 @@ void Newball(std::list<Cball>* list1) {
     const std::vector<std::vector<int> > vecvecint = read_int_array("TestInput.txt");
     nloci = vecvecint[0].size()-3;
     for (size_t row = 0; row < vecvecint.size(); ++row) {
-        indiv->Iball(vecvecint[row][0], vecvecint[row][1], vecvecint[row][2]);
+        Cball child(vecvecint[row][0], vecvecint[row][1], vecvecint[row][2]);
         for (size_t col = 3; col < vecvecint[row].size(); ++col) {
-            if (vecvecint[row][col] == 0) indiv->Igene(col+8, 0, 0);
-            if (vecvecint[row][col] == 2) indiv->Igene(col+8, 1, 1);
+            if (vecvecint[row][col] == 0) child.Igene(col+8, 0, 0);
+            if (vecvecint[row][col] == 2) child.Igene(col+8, 1, 1);
             if (vecvecint[row][col] == 1) {
                 if (randombit() == 0) {
-                    indiv->Igene(col + 8, 1, 0);
+                    child.Igene(col + 8, 1, 0);
                 } else {
-                    indiv->Igene(col + 8, 0, 1);
+                    child.Igene(col + 8, 0, 1);
                 }
             }
         }
-        list1->push_back(*indiv);
+        list1->push_back(child);
     }
     //////////// set genes for resource use ///////
     for (std::list<Cball>::iterator individual = list1->begin(); individual != list1->end(); ++individual) {
@@ -234,14 +214,12 @@ void Newball2008(short n, short male, std::list<Cball>* list1, double fr) {
     for (short i = 1; i <= n - male; i++) {
         const short xx = rndfrom1(500) + xrange / 2 - 250;
         const short yy = rndfrom1(yrange);
-        indiv->Iball(xx, yy, 0);
-        list1->push_back(*indiv);
+        list1->push_back(Cball(xx, yy, 0));
     }
     for (short i = 1; i <= male; i++) {
         const short xx = rndfrom1(500) + xrange / 2 - 250;
         const short yy = rndfrom1(yrange);
-        indiv->Iball(xx, yy, 1);
-        list1->push_back(*indiv);
+        list1->push_back(Cball(xx, yy, 1));
     }
     const short aa = rounds(fr * fr * n);
     const short ab = rounds(fr * (1 - fr) * 2 * n);
@@ -301,11 +279,11 @@ void Newball2008(short n, short male, std::list<Cball>* list1, double fr) {
 }
 
 ///// serach for candidate mates
-void matingcount (std::list<Cball>::iterator focalindiv, std::list<Cball>::iterator* matp, short matingsize, short* dens) {
+short matingcount (std::list<Cball>::iterator focalindiv, std::list<Cball>::iterator* matp, short matingsize) {
     const long x = focalindiv->xp;// position x for focal female
     const long y = focalindiv->yp;// position y for focal female
     const long NM = focalindiv->nocandiate;
-    *dens = 0;
+    short dens = 0;
     long k = 0;
     double total_fitness = 0.0;
     for (long i = 1; i <= NM; ++i) {
@@ -326,27 +304,25 @@ void matingcount (std::list<Cball>::iterator focalindiv, std::list<Cball>::itera
                 ++k;
                 total_fitness += focalindiv->candidatemate[i]->dfitness;
                 matp[k] = focalindiv->candidatemate[i];
-                *dens += 1;
+                ++dens;
             }
         }
     }
-    std::list<Cball>::iterator mk;
-    if (*dens > 0) {
+    if (dens > 0) {
         double sum = 0.0;
         long i = 1;
         const double r = urnd() * total_fitness;
         do {
-            mk = matp[i];
-            sum += mk->dfitness;
+            sum += matp[i]->dfitness;
             ++i;
         } while (sum < r && i <= k);
-        *dens = i - 1;
+        dens = i - 1;
     }
-    mk = matp[*dens];
+    return dens;
 }
 
 // save the results as afile
-void SaveF(std::list<Cball>* clist, short g, short gg, long n, short nogene) {
+void SaveF(const std::list<Cball>& clist, short g, short gg, long n, short nogene) {
     char ab[12]="File%%%", rch[10]="0000", nots[10]="0000";
     FILE* fp;
     sprintf(rch, "%d", g);
@@ -372,7 +348,7 @@ void SaveF(std::list<Cball>* clist, short g, short gg, long n, short nogene) {
     }
     fp = fopen(ab,"w");
     int i = 0;
-    for (std::list<Cball>::iterator it = clist->begin(); i < n; ++it, ++i) {
+    for (std::list<Cball>::const_iterator it = clist.begin(); i < n; ++it, ++i) {
         const long m1 = it->sexi;
         const double m2 = it->ResourceM();
         const double m3 = (m1 == 0) ? it->fitness : it->dfitness;
@@ -415,7 +391,7 @@ void SaveE(short g, short gg) {
     fclose(fp);
 }
 
-void SaveA(std::list<Cball>* clist, short g, short gg, long n, short clas ) {
+void SaveA(const std::list<Cball>& clist, short g, short gg, long n, short clas ) {
     char ab[12]="Resl%%%", rch[10]="0000", nots[10]="0000";
     double avfit[322];
     short nof[322];
@@ -449,7 +425,7 @@ void SaveA(std::list<Cball>* clist, short g, short gg, long n, short clas ) {
     fp = fopen(ab,"w");
     for (long x = 1; x <= clas; ++x) {
         int i = 0;
-        for (std::list<Cball>::iterator it = clist->begin(); i < n; ++it, ++i) {
+        for (std::list<Cball>::const_iterator it = clist.begin(); i < n; ++it, ++i) {
             if(it->sexi == 0) {
                 if(it->xp > w * (x - 1) && it->xp <= w * x) {
                     avfit[x] += it->fitness;
