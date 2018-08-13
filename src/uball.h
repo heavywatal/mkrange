@@ -26,7 +26,7 @@ public:
 void Newball(short n, std::list<Cball>  *list1);
 void Newball2008(short n, short male, std::list<Cball>  *list1, double fr);
 void matingcount(std::list<Cball>::iterator focalindiv,std::list<Cball>::iterator *matp, short matingsize,  short *dens);
-void SaveF(std::list<Cball>  *clist,short g,short gg, long n);
+void SaveF(std::list<Cball>  *clist,short g,short gg, long n, short nogene);
 short Resource(short a, short b);
 void SaveE(short g,short gg);
 void SaveA(std::list<Cball>  *clist,short g,short gg, long n, short clas );

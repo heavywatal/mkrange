@@ -224,7 +224,7 @@ lrandomizec();}
  	 item=alist->size();
  		if(y % genS ==0 || y==1)
  		{
- 		SaveF( alist, y,gggg, itemP);
+ 		SaveF( alist, y,gggg, itemP, nogene);
  		SaveA( alist,y,gggg, itemP,noclas);
  		}
 

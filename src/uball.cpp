@@ -7,7 +7,7 @@
 #include "read_array.hpp"
 
 extern short *Fresource;
-extern short nogene,rn,doend;
+extern short rn,doend;
 short xrange,yrange,minxrange, generation, kfood,homeranges;
 short xmi = 0, xma = 0;
 long no;
@@ -225,7 +225,6 @@ short tot,y2,t1,b1,xg,yg,ff,r,t,b,i,j,n,xx,yy,jj[4];
 double dist,dist2;
 tot=0;
 
-std::list<Cball>::iterator indiv;
 t1=0;
 b1=0;
 xg=(short)ceil((double)(xp)/200.);
@@ -450,7 +449,7 @@ void matingcount (std::list<Cball>::iterator focalindiv,std::list<Cball>::iterat
 			long  i, k,xx, yy, x, y,NM,y2;
 			double  dist,sum,r,dist2;
 			double total_fitness=0;
-			std::list<Cball>::iterator indiv, mk;
+			std::list<Cball>::iterator mk;
 		x=focalindiv->xp;// position x for focal female
 		y=focalindiv->yp;// position y for focal female
 		NM=focalindiv->nocandiate;
@@ -481,7 +480,6 @@ void matingcount (std::list<Cball>::iterator focalindiv,std::list<Cball>::iterat
 									/// count and save candidate male
 									 k++;
 									 total_fitness +=focalindiv->candidatemate[i]->dfitness;
-									// total_fitness +=indiv->fitness;
 									 matp[k]=focalindiv->candidatemate[i];
 									 *dens +=1;
 				   					 }
@@ -495,7 +493,6 @@ void matingcount (std::list<Cball>::iterator focalindiv,std::list<Cball>::iterat
 		r=urnd()*total_fitness;
 			do{
 			mk=matp[i];
-			//sum +=mk->fitness;
 			sum +=mk->dfitness;
 			i++;
 			}while(sum < r && i <= k);
@@ -510,12 +507,11 @@ void matingcount (std::list<Cball>::iterator focalindiv,std::list<Cball>::iterat
 // save the results as afile
 
 
-void SaveF(std::list<Cball>  *clist,short g,short gg, long n )
+void SaveF(std::list<Cball>  *clist,short g,short gg, long n, short nogene)
 {
-long  m1,i,ge;
+long  m1, ge;
 double m2;
 char ab[12]="File%%%", rch[10]="0000", nots[10]="0000";
-std::list<Cball>::iterator indiv;
 double m3;
 
 FILE *fp;
@@ -545,15 +541,16 @@ ab[4]=nots[0];
 }
 
 fp=fopen(ab,"w");
-for(indiv=clist->begin(), i=1;i<=n;indiv++,i++)
+int i = 0;
+for(std::list<Cball>::iterator it=clist->begin(); i<n; ++it, ++i)
 	{
-   m1=indiv->sexi;
-   m2=indiv->ResourceM();
-  if(m1==0) m3=indiv->fitness; else m3=indiv->dfitness;
-    fprintf(fp, "%d\t %d\t %ld\t %f\t  %7.3f\t", indiv->xp, indiv->yp,m1, m2, m3);
+   m1=it->sexi;
+   m2=it->ResourceM();
+  if(m1==0) m3=it->fitness; else m3=it->dfitness;
+    fprintf(fp, "%d\t %d\t %ld\t %f\t  %7.3f\t", it->xp, it->yp,m1, m2, m3);
 
    for(ge=1;ge<=nogene;ge++)
-        fprintf(fp, "%d\t ", indiv->gene1[ge]+ indiv->gene2[ge]);
+        fprintf(fp, "%d\t ", it->gene1[ge]+ it->gene2[ge]);
 
  	 fprintf(fp, "\n");
   }
@@ -610,9 +607,8 @@ fp=fopen(ab,"w");
 
 void SaveA(std::list<Cball>  *clist,short g,short gg, long n, short clas )
 {
-long  m1,m2,i,x;
+long  m1,m2,x;
 char ab[12]="Resl%%%", rch[10]="0000", nots[10]="0000";
-std::list<Cball>::iterator indiv;
 double m3,m4,w;
 double avfit[322];
 short nof[322];
@@ -654,13 +650,14 @@ w=32000/(double) clas;
 fp=fopen(ab,"w");
 for(x=1; x<=clas;x++)
 {
-	for(indiv=clist->begin(), i=1;i<=n;indiv++,i++)
+	int i = 0;
+	for(std::list<Cball>::iterator it=clist->begin();i < n; ++it, ++i)
 	{
-	if(indiv->sexi == 0)
+	if(it->sexi == 0)
 	{
-	 if( indiv->xp > w*(x-1)  && indiv->xp <= w*x)
+	 if(it->xp > w*(x-1) && it->xp <= w*x)
 	   {
-	      avfit[x] += indiv-> fitness;
+	      avfit[x] += it->fitness;
 	      nof[x] +=1;
 	    }
 	}
@@ -685,8 +682,6 @@ for(x=1; x<=clas;x++)
 void AssignBucket(std::list<Cball>  *list1)
 {
 short nogx,nogy, xc,yc;
-std::list<Cball>::iterator indiv;
-//std::list<Cball>::iterator *mk;
 
 nogx=xrange/200;//the max number of x dimention of the bucket girds y=3200  x=160
 nogy=yrange/200;//the max number of y dimention of the bucket girds　ｙ=1000 y=5
@@ -694,11 +689,11 @@ for(xc=0;xc<=nogx;xc++)
  for(yc=0;yc<=nogy;yc++)
 		noindiv[xc][yc]=0;//Initialize the array of the number of individuals in a bucket grid xc yc
 
-	for(indiv=list1->begin();indiv !=list1->end();indiv++)
+	for(std::list<Cball>::iterator it=list1->begin();it != list1->end(); ++it)
 		{
-  			xc=(short)ceil(indiv->xp/200.);yc=(short)ceil(indiv->yp/200.);
+  			xc=(short)ceil(it->xp/200.);yc=(short)ceil(it->yp/200.);
   			noindiv[xc][yc]+=1;// count the number of individual in a bucket
-  			gridindiv[xc][yc][noindiv[xc][yc]]=indiv;//store the individuals into the array
+  			gridindiv[xc][yc][noindiv[xc][yc]] = it;//store the individuals into the array
 			}
 
 
