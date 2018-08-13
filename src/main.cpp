@@ -38,7 +38,6 @@ short nloci, nopoly;
 
 int  main()
 {
-char a[100];
 
 std::list<Cball>::iterator individual;
 std::list<Cball>::iterator *matp;
@@ -84,41 +83,43 @@ nogene=10;       // No of loci
 norepeat=1;      // No of reprilcate
 nogeneration=100;// No of generations for one simulation 2000;*/
 /////////////////File Input ////////////
-std::ifstream fin("Inputfile");
-
-fin
- >> a >> xrange
- >> a >> minxrange
- >> a >> yrange
- >> a >> Lphenotype
- >> a >> Rphenotype
- >> a >> LN
- >> a >> RN
->> a >> xmi
->> a >> xma
- >> a >> no
- >> a >> Vp
-  >>  a >> homeranges
-  >>   a >> sizemating
-  >> a >> genS
-  >>  a >> G
-  >> a >> VS
-  >> a >> CC
-  >>   a >> reprate
-  >> a >> mutationr
-  >> a >> nem
-   >> a >> nloci
-   >> a >> nopoly
-   >> a >> allele_effect
-   >> a >> norepeat
-   >> a   >>nogeneration
-  >> a >> noclas
->> a >> mdispersal;
-
-
-fin.close();
-nomale=(short)no*0.5; // initial number of males
+{
+    std::string buffer;
+    std::ifstream fin("Inputfile");
+    fin >> buffer >> xrange
+        >> buffer >> minxrange
+        >> buffer >> yrange
+        >> buffer >> Lphenotype
+        >> buffer >> Rphenotype
+        >> buffer >> LN
+        >> buffer >> RN;
+    fin >> buffer;
+    if (buffer == "flatmin") {
+        fin           >> xmi
+            >> buffer >> xma
+            >> buffer;
+    }
+    fin           >> no
+        >> buffer >> Vp
+        >> buffer >> homeranges
+        >> buffer >> sizemating
+        >> buffer >> genS
+        >> buffer >> G
+        >> buffer >> VS
+        >> buffer >> CC
+        >> buffer >> reprate
+        >> buffer >> mutationr
+        >> buffer >> nem
+        >> buffer >> nloci
+        >> buffer >> nopoly
+        >> buffer >> allele_effect
+        >> buffer >> norepeat
+        >> buffer >> nogeneration
+        >> buffer >> noclas
+        >> buffer >> mdispersal;
+}
 ///////////////////////////////////////
+nomale = static_cast<short>(no / 2); // initial number of males
 nogene=nloci+10;
 numberofgenes=nogene;
  fdispersal=mdispersal;
@@ -129,7 +130,9 @@ for(prep=1;prep<=1;prep++)// repeat
 //mdispersal=revar[prep];
 std::cout<< "no of loci x effect x 2 =" << nloci*allele_effect*2 << std::endl;
 std::cout << "gradient x xmax(=x range)=" << G*xrange << std::endl;
-if(nloci*allele_effect*2 !=  G*xrange)norepeat=0;
+if (xmi > 0 || xma > 0) {// not 2008BK
+  if (nloci*allele_effect*2 - G*xrange > 1e-6) norepeat = 0;
+}
 for(gggg=1;gggg<=norepeat;gggg++)// repeat
 {
 randomizec();// initialize random number  (short type)

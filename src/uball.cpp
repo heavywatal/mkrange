@@ -8,7 +8,8 @@
 
 extern short *Fresource;
 extern short nogene,rn,doend;
-short xrange,yrange,minxrange, generation, kfood,homeranges,xmi,xma;
+short xrange,yrange,minxrange, generation, kfood,homeranges;
+short xmi = 0, xma = 0;
 long no;
 extern double Vp;
 extern gene genen;
