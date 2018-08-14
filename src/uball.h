@@ -17,6 +17,7 @@ class Cball {
     double ResourceM() const;
     void nreproduction(const Cball& male, std::list<Cball>* ablist, int nogene, double mdis, double fdis, double mr, double nmr);
     void measurefitness(double RR, double gradient, double Vs, double K, double Range, double MS);
+    int matingcount(std::list<Cball>::iterator* matp, int matingsize) const;
 
     int xp, yp, ix, iy, sexi;
     int nomating, nocandiate;
@@ -27,9 +28,7 @@ class Cball {
 
 void Newball(std::list<Cball>* list1);
 void Newball2008(int n, int male, std::list<Cball>* list1, double fr);
-int matingcount(std::list<Cball>::iterator focalindiv, std::list<Cball>::iterator* matp, int matingsize);
 void SaveF(const std::list<Cball>& clist, int g, int gg, size_t n, int nogene);
-short Resource(short a, short b);
 void SaveE(int g, int gg);
 void SaveA(const std::list<Cball>& clist, int g, int gg, size_t n, int clas);
 void AssignBucket(std::list<Cball>* list1);

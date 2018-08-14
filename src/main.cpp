@@ -130,7 +130,7 @@ int main() {
                             // choose female having nonzero fitness
                             // Search candidate mates :
                             // female search candidate mates
-                            const int nofm = matingcount(it, matp, sizemating);
+                            const int nofm = it->matingcount(matp, sizemating);
                             if (nofm > 0) {
                                 // if candidate males were not zero
                                 const Cball& male = *matp[nofm];

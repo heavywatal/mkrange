@@ -32,13 +32,11 @@ double Cball::ResourceM() const {
 // reproduction
 void Cball::nreproduction (const Cball& male, std::list<Cball>* ablist, int nogene, double mdis, double fdis, double mr, double nmr) {
     ++nomating;
-    const long x = xp;// position x for focal female
-    const long y = yp;// position y for focal female
     const long xx = male.xp;
     const long yy = male.yp;
-    const long y2 = (y >= male.yp) ? (male.yp + yrange) : (male.yp - yrange);
-    const double dist1 = std::sqrt((x - xx) * (x - xx) + (y - yy) * (y - yy));
-    const double dist2 = std::sqrt((x - xx) * (x - xx) + (y - y2) * (y - y2));
+    const long y2 = (yp >= male.yp) ? (male.yp + yrange) : (male.yp - yrange);
+    const double dist1 = std::sqrt((xp - xx) * (xp - xx) + (yp - yy) * (yp - yy));
+    const double dist2 = std::sqrt((xp - xx) * (xp - xx) + (yp - y2) * (yp - y2));
     mdistance = std::min(dist1, dist2);
     const int nooffspring = static_cast<int>(fitness);
     short og1[200], og2[200];
@@ -277,31 +275,28 @@ void Newball2008(int n, int male, std::list<Cball>* list1, double fr) {
 }
 
 ///// serach for candidate mates
-int matingcount (std::list<Cball>::iterator focalindiv, std::list<Cball>::iterator* matp, int matingsize) {
-    const long x = focalindiv->xp;// position x for focal female
-    const long y = focalindiv->yp;// position y for focal female
-    const long NM = focalindiv->nocandiate;
+int Cball::matingcount(std::list<Cball>::iterator* matp, int matingsize) const {
     int dens = 0;
     long k = 0;
     double total_fitness = 0.0;
-    for (long i = 1; i <= NM; ++i) {
-        if (focalindiv->candidatemate[i]->fitness >0 ) {
-            const long xx = focalindiv->candidatemate[i]->xp;
-            const long yy = focalindiv->candidatemate[i]->yp;
+    for (long i = 1; i <= nocandiate; ++i) {
+        if (candidatemate[i]->fitness > 0) {
+            const long xx = candidatemate[i]->xp;
+            const long yy = candidatemate[i]->yp;
             long y2 = 0;
-            if (y >= yy) {
+            if (yp >= yy) {
                 y2 = yy + yrange;
             } else {
                 y2 = yy - yrange;
             }
-            const double dist1 = std::sqrt((x - xx) * (x - xx) + (y - yy) * (y - yy));
-            const double dist2 = std::sqrt((x - xx) * (x - xx) + (y - y2) * (y - y2));
+            const double dist1 = std::sqrt((xp - xx) * (xp - xx) + (yp - yy) * (yp - yy));
+            const double dist2 = std::sqrt((xp - xx) * (xp - xx) + (yp - y2) * (yp - y2));
             const double dist = std::min(dist1, dist2);
             if (dist <= matingsize) {
                 /// count and save candidate male
                 ++k;
-                total_fitness += focalindiv->candidatemate[i]->dfitness;
-                matp[k] = focalindiv->candidatemate[i];
+                total_fitness += candidatemate[i]->dfitness;
+                matp[k] = candidatemate[i];
                 ++dens;
             }
         }
