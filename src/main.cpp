@@ -9,14 +9,14 @@
 #include "ucrandom.h"
 #include "uball.h"
 
-short xrange;
-short minxrange;
-short yrange;
-short xmi = 0;
-short xma = 0;
+int xrange;
+int minxrange;
+int yrange;
+int xmi = 0;
+int xma = 0;
 double Vp;
-short nloci;
-short nopoly;
+int nloci;
+int nopoly;
 double allele_effect;
 
 
@@ -25,19 +25,19 @@ int main() {
     randomizec();
     lrandomizec();
     int UNUSED;
-    long no;
-    short homeranges;
-    short sizemating;
-    short genS;
+    int no;
+    int homeranges;
+    int sizemating;
+    int genS;
     double G;
     double VS;
     double CC;
     double reprate;
     double mutationr;
     double nem;
-    short norepeat;
-    short nogeneration;
-    long noclas;
+    int norepeat;
+    int nogeneration;
+    int noclas;
     double mdispersal;
     {
         std::string buffer;
@@ -75,16 +75,16 @@ int main() {
             >> buffer >> mdispersal;  // dispersal distance of males
     }
     ///////////////////////////////////////
-    const short nomale = static_cast<short>(no / 2); // initial number of males
+    const int nomale = static_cast<int>(no / 2); // initial number of males
     const double fdispersal = mdispersal;
-    const short nogene = nloci + 10;
-    for (short prep = 1; prep <= 1; ++prep) {
+    const int nogene = nloci + 10;
+    for (int prep = 1; prep <= 1; ++prep) {
         std::cout << "no of loci x effect x 2 =" << nloci*allele_effect*2 << std::endl;
         std::cout << "gradient x xmax(=x range)=" << G*xrange << std::endl;
         if (xmi > 0 || xma > 0) {// not 2008BK
             if (nloci * allele_effect * 2 - G * xrange > 1e-6) norepeat = 0;
         }
-        for (short gggg = 1; gggg <= norepeat; ++gggg) {
+        for (int gggg = 1; gggg <= norepeat; ++gggg) {
             randomizec();// initialize random number (short type)
             lrandomizec();// initialize random number (long type)
             std::list<Cball> alist;// creat list for control individuals
@@ -96,7 +96,7 @@ int main() {
             }
             long minx = 0;
             long maxx = 0;
-            for (long y = 1; y <= nogeneration; ++y) {// Generation
+            for (int y = 1; y <= nogeneration; ++y) {// Generation
                 AssignBucket(&alist);
                 const size_t itemP = alist.size();// check number of individuals
                 if (itemP <= 0) {
@@ -130,7 +130,7 @@ int main() {
                             // choose female having nonzero fitness
                             // Search candidate mates :
                             // female search candidate mates
-                            const short nofm = matingcount(it, matp, sizemating);
+                            const int nofm = matingcount(it, matp, sizemating);
                             if (nofm > 0) {
                                 // if candidate males were not zero
                                 const Cball& male = *matp[nofm];
@@ -155,7 +155,7 @@ int main() {
                         }
                         individual = alist.erase(individual);// crear parents
                     }
-                    mdis = sqrt(mdis / (double)nn);
+                    mdis = std::sqrt(mdis / nn);
                     //NOTE: mdis is not used!!
                 }
             }// y no generation

@@ -7,14 +7,14 @@
 #include "uball.h"
 #include "read_array.hpp"
 
-extern short xrange;
-extern short minxrange;
-extern short yrange;
-extern short xmi;
-extern short xma;
+extern int xrange;
+extern int minxrange;
+extern int yrange;
+extern int xmi;
+extern int xma;
 extern double Vp;
-extern short nloci;
-extern short nopoly;
+extern int nloci;
+extern int nopoly;
 extern double allele_effect;
 
 std::vector<std::list<Cball>::iterator> gridindiv[162][7];
@@ -25,28 +25,28 @@ double Cball::ResourceM() const {
     for (int i = 11; i <= 10 + nloci; ++i) {
         sum += allele_effect * (gene1[i] + gene2[i]);
     }
-    sum += nrnd(sqrt(Vp));
+    sum += nrnd(std::sqrt(Vp));
     return sum;
 }
 
 // reproduction
-void Cball::nreproduction (const Cball& male, std::list<Cball>* ablist, short nogene, double mdis, double fdis, double mr, double nmr) {
+void Cball::nreproduction (const Cball& male, std::list<Cball>* ablist, int nogene, double mdis, double fdis, double mr, double nmr) {
     ++nomating;
     const long x = xp;// position x for focal female
     const long y = yp;// position y for focal female
     const long xx = male.xp;
     const long yy = male.yp;
     const long y2 = (y >= male.yp) ? (male.yp + yrange) : (male.yp - yrange);
-    const double dist1 = sqrt((x - xx) * (x - xx) + (y - yy) * (y - yy));
-    const double dist2 = sqrt((x - xx) * (x - xx) + (y - y2) * (y - y2));
+    const double dist1 = std::sqrt((x - xx) * (x - xx) + (y - yy) * (y - yy));
+    const double dist2 = std::sqrt((x - xx) * (x - xx) + (y - y2) * (y - y2));
     mdistance = std::min(dist1, dist2);
-    const short nooffspring = fitness;
+    const int nooffspring = static_cast<int>(fitness);
     short og1[200], og2[200];
     if (nooffspring > 0) {
-        for (short j = 1; j<= nooffspring; ++j) {
-            for (short k = 1; k<= nogene; ++k) {
+        for (int j = 1; j<= nooffspring; ++j) {
+            for (int k = 1; k<= nogene; ++k) {
                 // inheritance genes from mother and father
-                short gg = randombit();// random number 1 or 0
+                int gg = randombit();// random number 1 or 0
                 if (gg == 1) {
                     og1[k] = gene1[k];
                 } else {
@@ -82,21 +82,21 @@ void Cball::nreproduction (const Cball& male, std::list<Cball>* ablist, short no
                     }
                 }
             }
-            short gg = randombit();// determin offspring sex
+            int gg = randombit();// determin offspring sex
             const double sddispersal = (gg == 0) ? fdis : mdis;
             long nx = 0;
             long ny = 0;
             do {//// desersal
                 // random number from normal distribtion with sddispersal standard deviationa and 0 mean
                 const double didi = nrnd(sddispersal);
-                const long d = abs(didi);
+                const long d = static_cast<long>(std::abs(didi));
                 randomove(ix, iy, d, &nx, &ny);
                 if (ny > yrange) ny = ny - yrange;
                 if (ny <= 0) ny = yrange + ny;
             } while ((nx <= minxrange) || (nx > xrange ) || (ny <= 0) || (ny > yrange));
             // Initialize offspring position and sex
-            Cball child(nx, ny, gg);
-            for (short i = 1; i <= nogene; ++i) {
+            Cball child(static_cast<int>(nx), static_cast<int>(ny), gg);
+            for (int i = 1; i <= nogene; ++i) {
                 child.Igene(i, og1[i], og2[i]);// offspring genes
             }
             ablist->push_back(child);// add offspring the list
@@ -108,14 +108,14 @@ void Cball::nreproduction (const Cball& male, std::list<Cball>* ablist, short no
 // calculate fitness
 void Cball::measurefitness(double RR, double gradient, double Vs, double K, double Range, double MS) {
 //Vs fitness function variance, K carring capacity,
-    const short xg = (short)ceil((double)(xp) / 200.);
-    const short yg = (short)ceil((double)(yp) / 200.);
-    const short ff = std::max(xg - 1, 1);
-    const short t = yg - 1;
-    const short b = yg + 1;
-    short r = xg + 1;
+    const int xg = static_cast<int>(ceil(xp / 200.0));
+    const int yg = static_cast<int>(ceil(yp / 200.0));
+    const int ff = std::max(xg - 1, 1);
+    const int t = yg - 1;
+    const int b = yg + 1;
+    int r = xg + 1;
     if (r > xrange / 200) {r = xrange / 200;}
-    short jj[4];
+    int jj[4];
     if (t < 1) {
         jj[1] = 1;
         jj[2] = 2;
@@ -129,21 +129,21 @@ void Cball::measurefitness(double RR, double gradient, double Vs, double K, doub
         jj[2] = yg;
         jj[3] = yg + 1;
     }
-    short tot = 0;
-    for (short i = ff; i <= r; ++i) {
-        for (short j = 1; j <= 3; ++j) {
+    int tot = 0;
+    for (int i = ff; i <= r; ++i) {
+        for (int j = 1; j <= 3; ++j) {
             const std::vector<std::list<Cball>::iterator> grid_ij = gridindiv[i][jj[j]];
             for (size_t k = 0; k < grid_ij.size(); ++k) {
-                const short xx = grid_ij[k]->xp;
-                const short yy = grid_ij[k]->yp;
-                short y2 = 0;
+                const int xx = grid_ij[k]->xp;
+                const int yy = grid_ij[k]->yp;
+                int y2 = 0;
                 if (iy >= yy) {
                     y2 = yy + yrange;
                 } else {
                     y2 = yy - yrange;
                 }
-                const double dist1 = sqrt((ix-xx) * (ix-xx) + (iy-yy) * (iy-yy));
-                const double dist2 = sqrt((ix-xx) * (ix-xx) + (iy-y2) * (iy-y2));
+                const double dist1 = std::sqrt((ix-xx) * (ix-xx) + (iy-yy) * (iy-yy));
+                const double dist2 = std::sqrt((ix-xx) * (ix-xx) + (iy-y2) * (iy-y2));
                 const double dist = std::min(dist1, dist2);
                 if (dist <= Range) {
                     //count number of individuals within the range
@@ -179,17 +179,18 @@ void Cball::measurefitness(double RR, double gradient, double Vs, double K, doub
 void Newball(std::list<Cball>* list1) {
     //// creat n individuals and initialize position and sex
     const std::vector<std::vector<int> > vecvecint = read_int_array("TestInput.txt");
-    nloci = vecvecint[0].size()-3;
+    nloci = static_cast<int>(vecvecint[0].size() - 3);
     for (size_t row = 0; row < vecvecint.size(); ++row) {
         Cball child(vecvecint[row][0], vecvecint[row][1], vecvecint[row][2]);
         for (size_t col = 3; col < vecvecint[row].size(); ++col) {
-            if (vecvecint[row][col] == 0) child.Igene(col+8, 0, 0);
-            if (vecvecint[row][col] == 2) child.Igene(col+8, 1, 1);
+            const int col_8 = static_cast<int>(col) + 8;
+            if (vecvecint[row][col] == 0) child.Igene(col_8, 0, 0);
+            if (vecvecint[row][col] == 2) child.Igene(col_8, 1, 1);
             if (vecvecint[row][col] == 1) {
                 if (randombit() == 0) {
-                    child.Igene(col + 8, 1, 0);
+                    child.Igene(col_8, 1, 0);
                 } else {
-                    child.Igene(col + 8, 0, 1);
+                    child.Igene(col_8, 0, 1);
                 }
             }
         }
@@ -203,37 +204,35 @@ void Newball(std::list<Cball>* list1) {
     }
 }
 
-void Newball2008(short n, short male, std::list<Cball>* list1, double fr) {
-    short *tur;
-    short *ge1,*ge2;
-    ge1 = new short[n+1];
-    ge2 = new short[n+1];
-    tur = new short[n+1];
+void Newball2008(int n, int male, std::list<Cball>* list1, double fr) {
+    short *tur = new short[n+1];
+    short *ge1 = new short[n+1];
+    short *ge2 = new short[n+1];
     // creat n individuals and initialize position and sex
-    for (short i = 1; i <= n - male; i++) {
-        const short xx = rndfrom1(500) + xrange / 2 - 250;
-        const short yy = rndfrom1(yrange);
+    for (int i = 1; i <= n - male; i++) {
+        const int xx = rndfrom1(500) + xrange / 2 - 250;
+        const int yy = rndfrom1(static_cast<short>(yrange));
         list1->push_back(Cball(xx, yy, 0));
     }
-    for (short i = 1; i <= male; i++) {
-        const short xx = rndfrom1(500) + xrange / 2 - 250;
-        const short yy = rndfrom1(yrange);
+    for (int i = 1; i <= male; i++) {
+        const int xx = rndfrom1(500) + xrange / 2 - 250;
+        const int yy = rndfrom1(static_cast<short>(yrange));
         list1->push_back(Cball(xx, yy, 1));
     }
-    const short aa = rounds(fr * fr * n);
-    const short ab = rounds(fr * (1 - fr) * 2 * n);
+    const int aa = rounds(fr * fr * n);
+    const int ab = rounds(fr * (1 - fr) * 2 * n);
     ////// set genes for resource use ///////
-    for (short j = 1; j <= 10; ++j) {
-        GerateRandomperm(n, tur);
-        for (short i = 1; i <= aa; ++i) {
+    for (int j = 1; j <= 10; ++j) {
+        GerateRandomperm(static_cast<short>(n), tur);
+        for (int i = 1; i <= aa; ++i) {
             ge1[tur[i]] = 1;
             ge2[tur[i]] = 1;
         }
-        for (short i = aa + 1; i <= aa + ab; ++i) {
+        for (int i = aa + 1; i <= aa + ab; ++i) {
             ge1[tur[i]] = 1;
             ge2[tur[i]] = 0;
         }
-        for (short i = aa + ab + 1; i <= n; ++i) {
+        for (int i = aa + ab + 1; i <= n; ++i) {
             ge1[tur[i]] = 0;
             ge2[tur[i]] = 0;
         }
@@ -242,23 +241,23 @@ void Newball2008(short n, short male, std::list<Cball>* list1, double fr) {
            individual->Igene(j, ge1[i], ge2[i]);
        }
     }
-    for (short j = 11; j <= 10 + (nloci - nopoly) / 2; ++j) {
+    for (int j = 11; j <= 10 + (nloci - nopoly) / 2; ++j) {
         for (std::list<Cball>::iterator individual = list1->begin(); individual != list1->end(); ++individual) {
             individual->Igene(j, 1, 1);
         }
     }
     // genes 1 and 0 at 3 loci are randomly allocated for all the individuals
-    for (short j = 11 + (nloci - nopoly) / 2; j <= 10 + (nloci - nopoly) / 2 + nopoly; ++j) {
-        GerateRandomperm(n, tur);
-        for (short i = 1; i <= aa; ++i) {
+    for (int j = 11 + (nloci - nopoly) / 2; j <= 10 + (nloci - nopoly) / 2 + nopoly; ++j) {
+        GerateRandomperm(static_cast<short>(n), tur);
+        for (int i = 1; i <= aa; ++i) {
             ge1[tur[i]] = 1;
             ge2[tur[i]] = 1;
         }
-        for (short i = aa + 1; i <= aa + ab; ++i) {
+        for (int i = aa + 1; i <= aa + ab; ++i) {
             ge1[tur[i]] = 1;
             ge2[tur[i]] = 0;
         }
-        for (short i = aa + ab + 1; i <= n; ++i){
+        for (int i = aa + ab + 1; i <= n; ++i){
             ge1[tur[i]] = 0;
             ge2[tur[i]] = 0;
         }
@@ -267,22 +266,22 @@ void Newball2008(short n, short male, std::list<Cball>* list1, double fr) {
             individual->Igene(j, ge1[i], ge2[i]);
         }
     }
-    for (short j = 11 + (nloci - nopoly) / 2 + nopoly; j <= 10 + nloci; ++j) {
+    for (int j = 11 + (nloci - nopoly) / 2 + nopoly; j <= 10 + nloci; ++j) {
         for (std::list<Cball>::iterator individual = list1->begin(); individual != list1->end(); ++individual) {
             individual->Igene(j, 0, 0);
         }
     }
-    delete tur;
-    delete ge1;
-    delete ge2;
+    delete[] tur;
+    delete[] ge1;
+    delete[] ge2;
 }
 
 ///// serach for candidate mates
-short matingcount (std::list<Cball>::iterator focalindiv, std::list<Cball>::iterator* matp, short matingsize) {
+int matingcount (std::list<Cball>::iterator focalindiv, std::list<Cball>::iterator* matp, int matingsize) {
     const long x = focalindiv->xp;// position x for focal female
     const long y = focalindiv->yp;// position y for focal female
     const long NM = focalindiv->nocandiate;
-    short dens = 0;
+    int dens = 0;
     long k = 0;
     double total_fitness = 0.0;
     for (long i = 1; i <= NM; ++i) {
@@ -295,8 +294,8 @@ short matingcount (std::list<Cball>::iterator focalindiv, std::list<Cball>::iter
             } else {
                 y2 = yy - yrange;
             }
-            const double dist1 = sqrt((x - xx) * (x - xx) + (y - yy) * (y - yy));
-            const double dist2 = sqrt((x - xx) * (x - xx) + (y - y2) * (y - y2));
+            const double dist1 = std::sqrt((x - xx) * (x - xx) + (y - yy) * (y - yy));
+            const double dist2 = std::sqrt((x - xx) * (x - xx) + (y - y2) * (y - y2));
             const double dist = std::min(dist1, dist2);
             if (dist <= matingsize) {
                 /// count and save candidate male
@@ -309,7 +308,7 @@ short matingcount (std::list<Cball>::iterator focalindiv, std::list<Cball>::iter
     }
     if (dens > 0) {
         double sum = 0.0;
-        long i = 1;
+        int i = 1;
         const double r = urnd() * total_fitness;
         do {
             sum += matp[i]->dfitness;
@@ -321,16 +320,16 @@ short matingcount (std::list<Cball>::iterator focalindiv, std::list<Cball>::iter
 }
 
 // save the results as afile
-void SaveF(const std::list<Cball>& clist, short g, short gg, long n, short nogene) {
+void SaveF(const std::list<Cball>& clist, int g, int gg, size_t n, int nogene) {
     std::ostringstream oss;
     oss << "File" << gg << "-" << g;
     FILE* fp = fopen(oss.str().c_str(), "w");
-    int i = 0;
-    for (std::list<Cball>::const_iterator it = clist.begin(); i < n; ++it, ++i) {
-        const long m1 = it->sexi;
+    std::list<Cball>::const_iterator it = clist.begin();
+    for (size_t i = 0; i < n; ++it, ++i) {
+        const int m1 = it->sexi;
         const double m2 = it->ResourceM();
         const double m3 = (m1 == 0) ? it->fitness : it->dfitness;
-        fprintf(fp, "%d\t %d\t %ld\t %f\t  %7.3f\t", it->xp, it->yp, m1, m2, m3);
+        fprintf(fp, "%d\t %d\t %d\t %f\t  %7.3f\t", it->xp, it->yp, m1, m2, m3);
         for (long ge = 1; ge <= nogene; ++ge) {
             fprintf(fp, "%d\t ", it->gene1[ge]+ it->gene2[ge]);
         }
@@ -339,63 +338,55 @@ void SaveF(const std::list<Cball>& clist, short g, short gg, long n, short nogen
     fclose(fp);
 }
 
-void SaveE(short g, short gg) {
+void SaveE(int g, int gg) {
     std::ostringstream oss;
     oss << "File" << gg << "-" << g;
     FILE* fp = fopen(oss.str().c_str(), "w");
-    short m1 = 0;
-    fprintf(fp, "%d", m1);
+    fprintf(fp, "%d", 0);
     fclose(fp);
 }
 
-void SaveA(const std::list<Cball>& clist, short g, short gg, long n, short clas ) {
+void SaveA(const std::list<Cball>& clist, int g, int gg, size_t n, int clas) {
     std::ostringstream oss;
     oss << "Resl" << gg << "-" << g;
     FILE* fp = fopen(oss.str().c_str(), "w");
-    double avfit[322];
-    short nof[322];
-    for (long x = 0; x<= 321; ++x) {
-        avfit[x] = 0;
-        nof[x] = 0;
-    }
-    const double w = 32000 / (double) clas;
-    for (long x = 1; x <= clas; ++x) {
-        int i = 0;
-        for (std::list<Cball>::const_iterator it = clist.begin(); i < n; ++it, ++i) {
+    std::vector<double> avfit(clas);
+    std::vector<int> nof(clas);
+    const double w = 32000.0 / clas;
+    for (int x = 0; x < clas; ++x) {
+        std::list<Cball>::const_iterator it = clist.begin();
+        for (size_t i = 0; i < n; ++it, ++i) {
             if(it->sexi == 0) {
-                if(it->xp > w * (x - 1) && it->xp <= w * x) {
+                if(w * x < it->xp && it->xp <= w * (x + 1)) {
                     avfit[x] += it->fitness;
                     nof[x] += 1;
                 }
             }
         }
     }
-    for (long x = 1; x <= clas; ++x) {
-        const long m1 = w * (x-1);
-        const long m2 = w * x;
-        const double m3 = nof[x];
-        double m4 = 0.0;
-        if (nof[x] > 0) {
-            m4 = avfit[x] / (double)nof[x];
-        }
-        fprintf(fp, "%ld\t %ld\t %7.4f\t %7.4f\t", m1, m2, m3, m4);
+    for (int x = 0; x < clas; ++x) {
+        const int m1 = static_cast<int>(w * x);
+        const int m2 = static_cast<int>(w * (x + 1));
+        const double m3 = static_cast<double>(nof[x]);
+        const double m4 = m3 > 0.0 ? avfit[x] / m3 : 0.0;
+        fprintf(fp, "%d\t %d\t %7.4f\t %7.4f\t", m1, m2, m3, m4);
         fprintf(fp, "\n");
     }
     fclose(fp);
 }
 
 void AssignBucket(std::list<Cball>* list1) {
-    const size_t nogx = xrange / 200;//the max number of x dimention of the bucket girds y = 3200 x = 160
-    const size_t nogy = yrange / 200;//the max number of y dimention of the bucket girds y = 1000 y = 5
-    for (size_t xc = 0; xc <= nogx; ++xc) {
-        for (size_t yc = 0; yc <= nogy; ++yc) {
+    const int nogx = xrange / 200;//the max number of x dimention of the bucket girds y = 3200 x = 160
+    const int nogy = yrange / 200;//the max number of y dimention of the bucket girds y = 1000 y = 5
+    for (int xc = 0; xc <= nogx; ++xc) {
+        for (int yc = 0; yc <= nogy; ++yc) {
             //Initialize the array of the number of individuals in a bucket grid xc yc
             gridindiv[xc][yc].clear();
         }
     }
     for (std::list<Cball>::iterator it = list1->begin(); it != list1->end(); ++it) {
-        const size_t xc = ceil(it->xp / 200.);
-        const size_t yc = ceil(it->yp / 200.);
+        const int xc = static_cast<int>(ceil(it->xp / 200.));
+        const int yc = static_cast<int>(ceil(it->yp / 200.));
         gridindiv[xc][yc].push_back(it);//store the individuals into the array
     }
 }
