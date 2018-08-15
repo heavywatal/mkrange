@@ -18,7 +18,7 @@ class Cball {
     double ResourceM() const;
     void nreproduction(const Cball& male, std::list<Cball>* ablist, int nogene, double mdis, double fdis, double mr, double nmr);
     void measurefitness(double RR, double gradient, double Vs, double K, double Range, double MS);
-    int matingcount(std::list<Cball>::iterator* matp, int matingsize) const;
+    size_t matingcount(int matingsize) const;
 
     int xp, yp, ix, iy, sexi;
     int nomating;

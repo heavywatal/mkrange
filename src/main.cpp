@@ -21,7 +21,6 @@ double allele_effect;
 
 
 int main() {
-    std::list<Cball>::iterator* matp = new std::list<Cball>::iterator[30000+1];// creat array for candidate mates
     randomizec();
     lrandomizec();
     int UNUSED;
@@ -130,10 +129,10 @@ int main() {
                             // choose female having nonzero fitness
                             // Search candidate mates :
                             // female search candidate mates
-                            const int nofm = it->matingcount(matp, sizemating);
-                            if (nofm > 0) {
+                            const size_t nofm = it->matingcount(sizemating);
+                            if (nofm < it->candidatemate.size()) {
                                 // if candidate males were not zero
-                                const Cball& male = *matp[nofm];
+                                const Cball& male = *it->candidatemate[nofm];
                                 // give birth to young
                                 // mp is a chosen male
                                 it->nreproduction(male, &alist, nogene, mdispersal, fdispersal, mutationr, nem);

@@ -272,10 +272,10 @@ void Newball2008(int n, int male, std::list<Cball>* list1, double fr) {
 }
 
 ///// serach for candidate mates
-int Cball::matingcount(std::list<Cball>::iterator* matp, int matingsize) const {
-    int dens = 0;
-    long k = 0;
+size_t Cball::matingcount(int matingsize) const {
     double total_fitness = 0.0;
+    std::vector<size_t> indices;
+    indices.reserve(candidatemate.size());
     for (size_t i = 0; i < candidatemate.size(); ++i) {
         if (candidatemate[i]->fitness > 0) {
             const long xx = candidatemate[i]->xp;
@@ -291,24 +291,22 @@ int Cball::matingcount(std::list<Cball>::iterator* matp, int matingsize) const {
             const double dist = std::min(dist1, dist2);
             if (dist <= matingsize) {
                 /// count and save candidate male
-                ++k;
                 total_fitness += candidatemate[i]->dfitness;
-                matp[k] = candidatemate[i];
-                ++dens;
+                indices.push_back(i);
             }
         }
     }
-    if (dens > 0) {
+    if (total_fitness > 0.0) {
         double sum = 0.0;
-        int i = 1;
+        unsigned i = 0;
         const double r = urnd() * total_fitness;
         do {
-            sum += matp[i]->dfitness;
+            sum += candidatemate[indices[i]]->dfitness;
             ++i;
-        } while (sum < r && i <= k);
-        dens = i - 1;
+        } while (sum < r);
+        return indices[--i];
     }
-    return dens;
+    return candidatemate.size();
 }
 
 // save the results as afile
