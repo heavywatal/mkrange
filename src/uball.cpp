@@ -29,15 +29,17 @@ double Cball::ResourceM() const {
     return sum;
 }
 
+double Cball::distance(const Cball& other) const {
+    const int y2 = (yp >= other.yp) ? (other.yp + yrange) : (other.yp - yrange);
+    const double dist1 = std::sqrt((xp - other.xp) * (xp - other.xp) + (yp - other.yp) * (yp - other.yp));
+    const double dist2 = std::sqrt((xp - other.xp) * (xp - other.xp) + (yp - y2) * (yp - y2));
+    return std::min(dist1, dist2);
+}
+
 // reproduction
 void Cball::nreproduction (const Cball& male, std::list<Cball>* ablist, int nogene, double mdis, double fdis, double mr, double nmr) {
     ++nomating;
-    const long xx = male.xp;
-    const long yy = male.yp;
-    const long y2 = (yp >= male.yp) ? (male.yp + yrange) : (male.yp - yrange);
-    const double dist1 = std::sqrt((xp - xx) * (xp - xx) + (yp - yy) * (yp - yy));
-    const double dist2 = std::sqrt((xp - xx) * (xp - xx) + (yp - y2) * (yp - y2));
-    mdistance = std::min(dist1, dist2);
+    mdistance = distance(male);
     const int nooffspring = static_cast<int>(fitness);
     short og1[200], og2[200];
     if (nooffspring > 0) {
@@ -88,7 +90,7 @@ void Cball::nreproduction (const Cball& male, std::list<Cball>* ablist, int noge
                 // random number from normal distribtion with sddispersal standard deviationa and 0 mean
                 const double didi = nrnd(sddispersal);
                 const long d = static_cast<long>(std::abs(didi));
-                randomove(ix, iy, d, &nx, &ny);
+                randomove(xp, yp, d, &nx, &ny);
                 if (ny > yrange) ny = ny - yrange;
                 if (ny <= 0) ny = yrange + ny;
             } while ((nx <= minxrange) || (nx > xrange ) || (ny <= 0) || (ny > yrange));
@@ -132,17 +134,7 @@ void Cball::measurefitness(double RR, double gradient, double Vs, double K, doub
         for (int j = 1; j <= 3; ++j) {
             const std::vector<std::list<Cball>::iterator> grid_ij = gridindiv[i][jj[j]];
             for (size_t k = 0; k < grid_ij.size(); ++k) {
-                const int xx = grid_ij[k]->xp;
-                const int yy = grid_ij[k]->yp;
-                int y2 = 0;
-                if (iy >= yy) {
-                    y2 = yy + yrange;
-                } else {
-                    y2 = yy - yrange;
-                }
-                const double dist1 = std::sqrt((ix-xx) * (ix-xx) + (iy-yy) * (iy-yy));
-                const double dist2 = std::sqrt((ix-xx) * (ix-xx) + (iy-y2) * (iy-y2));
-                const double dist = std::min(dist1, dist2);
+                const double dist = distance(*grid_ij[k]);
                 if (dist <= Range) {
                     //count number of individuals within the range
                     ++tot;
@@ -161,11 +153,11 @@ void Cball::measurefitness(double RR, double gradient, double Vs, double K, doub
     if (xmi > 0 || xma > 0) {// BK
         int AA = xrange / 2 - xmi;
         int BB = xma - xrange / 2;
-        if (ix >= xrange / 2 - AA && ix <= xrange / 2 + BB ) Sx = 16 + gradient * (xrange / 2 - 4000);
-        if (ix < xrange / 2 - AA) Sx = 16 + gradient * (ix - 4000 + AA);
-        if (ix > xrange / 2 + BB) Sx = 16 + gradient * (ix - 4000 - BB);
+        if (xp >= xrange / 2 - AA && xp <= xrange / 2 + BB ) Sx = 16 + gradient * (xrange / 2 - 4000);
+        if (xp < xrange / 2 - AA) Sx = 16 + gradient * (xp - 4000 + AA);
+        if (xp > xrange / 2 + BB) Sx = 16 + gradient * (xp - 4000 - BB);
     } else {// 2008BK
-        Sx = 64 + gradient * (ix - 16000) * (ix - 16000) * (ix - 16000) / 1000000.;
+        Sx = 64 + gradient * (xp - 16000) * (xp - 16000) * (xp - 16000) / 1000000.;
     }
     dfitness = 2 + RR * (1 - tot / K) - (Sx - ResourceM()) * (Sx - ResourceM()) / (2 * Vs);
     if (dfitness <= 0) dfitness = 0;
@@ -278,17 +270,7 @@ size_t Cball::matingcount(int matingsize) const {
     indices.reserve(candidatemate.size());
     for (size_t i = 0; i < candidatemate.size(); ++i) {
         if (candidatemate[i]->fitness > 0) {
-            const long xx = candidatemate[i]->xp;
-            const long yy = candidatemate[i]->yp;
-            long y2 = 0;
-            if (yp >= yy) {
-                y2 = yy + yrange;
-            } else {
-                y2 = yy - yrange;
-            }
-            const double dist1 = std::sqrt((xp - xx) * (xp - xx) + (yp - yy) * (yp - yy));
-            const double dist2 = std::sqrt((xp - xx) * (xp - xx) + (yp - y2) * (yp - y2));
-            const double dist = std::min(dist1, dist2);
+            const double dist = distance(*candidatemate[i]);
             if (dist <= matingsize) {
                 /// count and save candidate male
                 total_fitness += candidatemate[i]->dfitness;

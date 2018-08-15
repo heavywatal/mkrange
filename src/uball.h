@@ -6,7 +6,7 @@ class Cball {
     typedef short gene[140];
   public:
     Cball (int x, int y, int s)
-    : xp(x), yp(y), ix(x), iy(y), sexi(s),
+    : xp(x), yp(y), sexi(s),
       nomating(0),
       fitness(0), dfitness(0), mdistance(0) {}
     // initialize genes
@@ -19,8 +19,9 @@ class Cball {
     void nreproduction(const Cball& male, std::list<Cball>* ablist, int nogene, double mdis, double fdis, double mr, double nmr);
     void measurefitness(double RR, double gradient, double Vs, double K, double Range, double MS);
     size_t matingcount(int matingsize) const;
+    double distance(const Cball&) const;
 
-    int xp, yp, ix, iy, sexi;
+    int xp, yp, sexi;
     int nomating;
     double fitness, dfitness, mdistance;
     gene gene1, gene2, genotype;
