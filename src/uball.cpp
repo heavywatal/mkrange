@@ -150,9 +150,8 @@ void Cball::measurefitness(double RR, double gradient, double Vs, double K, doub
                 // count number of mailes within the ara of radius 200
                 if (sexi == 0 && dist <= MS && grid_ij[k]->sexi == 1) {
                     // if this individul is female and called individual is male and if the distance between them is less than 200, then the called individual is recored as candidate males.
-                    ++nocandiate;
-                    // store the canditate males
-                    candidatemate[nocandiate] = grid_ij[k];
+                    candidatemate.push_back(grid_ij[k]);
+                    //NOTE: should be refreshed every generation?
                 }
             }
         }
@@ -204,8 +203,8 @@ void Newball(std::list<Cball>* list1) {
 
 void Newball2008(int n, int male, std::list<Cball>* list1, double fr) {
     short *tur = new short[n+1];
-    short *ge1 = new short[n+1];
-    short *ge2 = new short[n+1];
+    std::vector<short> ge1(n + 1);
+    std::vector<short> ge2(n + 1);
     // creat n individuals and initialize position and sex
     for (int i = 1; i <= n - male; i++) {
         const int xx = rndfrom1(500) + xrange / 2 - 250;
@@ -270,8 +269,6 @@ void Newball2008(int n, int male, std::list<Cball>* list1, double fr) {
         }
     }
     delete[] tur;
-    delete[] ge1;
-    delete[] ge2;
 }
 
 ///// serach for candidate mates
@@ -279,7 +276,7 @@ int Cball::matingcount(std::list<Cball>::iterator* matp, int matingsize) const {
     int dens = 0;
     long k = 0;
     double total_fitness = 0.0;
-    for (long i = 1; i <= nocandiate; ++i) {
+    for (size_t i = 0; i < candidatemate.size(); ++i) {
         if (candidatemate[i]->fitness > 0) {
             const long xx = candidatemate[i]->xp;
             const long yy = candidatemate[i]->yp;

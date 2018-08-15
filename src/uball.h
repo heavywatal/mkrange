@@ -1,4 +1,5 @@
 #include <cstdio>
+#include <vector>
 #include <list>
 
 class Cball {
@@ -6,7 +7,7 @@ class Cball {
   public:
     Cball (int x, int y, int s)
     : xp(x), yp(y), ix(x), iy(y), sexi(s),
-      nomating(0), nocandiate(0),
+      nomating(0),
       fitness(0), dfitness(0), mdistance(0) {}
     // initialize genes
     void Igene(int nthgene, short gf, short gl) {
@@ -20,10 +21,10 @@ class Cball {
     int matingcount(std::list<Cball>::iterator* matp, int matingsize) const;
 
     int xp, yp, ix, iy, sexi;
-    int nomating, nocandiate;
+    int nomating;
     double fitness, dfitness, mdistance;
     gene gene1, gene2, genotype;
-    std::list<Cball>::iterator candidatemate[1500];
+    std::vector<std::list<Cball>::iterator> candidatemate;
 };
 
 void Newball(std::list<Cball>* list1);
