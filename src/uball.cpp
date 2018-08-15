@@ -47,43 +47,18 @@ void Cball::nreproduction (const Cball& male, std::list<Cball>* ablist, int noge
         for (int j = 1; j<= nooffspring; ++j) {
             for (int k = 1; k<= nogene; ++k) {
                 // inheritance genes from mother and father
-                int gg = randombit();// random number 1 or 0
-                if (gg == 1) {
-                    og1[k] = gene1[k];
-                } else {
-                    og1[k] = gene2[k];
-                }
-                gg = randombit();
-                if (gg == 1) {
-                    og2[k] = male.gene1[k];
-                } else {
-                    og2[k] = male.gene2[k];
-                }
+                og1[k] = randombit() ? gene1[k] : gene2[k];
+                og2[k] = randombit() ? male.gene1[k] : male.gene2[k];
                 ///////// mutation ////////
-                double mrr = 0.0;
-                if (k > 10) {
-                    mrr = mr;
-                } else {
-                    mrr = nmr;
+                const double mrr = (k > 10) ? mr : nmr;
+                if (longurnd() < mrr) {
+                    og1[k] = (og1[k] == 1) ? 0 : 1;
                 }
-                double mu = longurnd();
-                if (mrr >= mu) {
-                    if (og1[k] == 1) {
-                        og1[k] = 0;
-                    } else {
-                        og1[k] = 1;
-                    }
-                }
-                mu = longurnd();
-                if (mrr >= mu) {
-                    if (og2[k] == 1) {
-                        og2[k] = 0;
-                    } else {
-                        og2[k] = 1;
-                    }
+                if (longurnd() < mrr) {
+                    og2[k] = (og2[k] == 1) ? 0 : 1;
                 }
             }
-            int gg = randombit();// determin offspring sex
+            const int gg = randombit();// determin offspring sex
             const double sddispersal = (gg == 0) ? fdis : mdis;
             long nx = 0;
             long ny = 0;
