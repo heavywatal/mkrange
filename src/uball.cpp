@@ -41,7 +41,8 @@ void Cball::nreproduction (const Cball& male, std::list<Cball>* ablist, int noge
     ++nomating;
     mdistance = distance(male);
     const int nooffspring = static_cast<int>(fitness);
-    short og1[200], og2[200];
+    std::vector<short> og1(nogene + 1);
+    std::vector<short> og2(nogene + 1);
     if (nooffspring > 0) {
         for (int j = 1; j<= nooffspring; ++j) {
             for (int k = 1; k<= nogene; ++k) {
