@@ -174,32 +174,19 @@ void Newball2008(int n, int male, std::list<Cball>* list1, double fr) {
     std::vector<short> ge1(n + 1);
     std::vector<short> ge2(n + 1);
     // creat n individuals and initialize position and sex
-    for (int i = 1; i <= n - male; i++) {
+    for (int i = 1; i <= n; ++i) {
         const int xx = rndfrom1(500) + xrange / 2 - 250;
         const int yy = rndfrom1(static_cast<short>(yrange));
-        list1->push_back(Cball(xx, yy, 0));
-    }
-    for (int i = 1; i <= male; i++) {
-        const int xx = rndfrom1(500) + xrange / 2 - 250;
-        const int yy = rndfrom1(static_cast<short>(yrange));
-        list1->push_back(Cball(xx, yy, 1));
+        list1->push_back(Cball(xx, yy, i <= male));
     }
     const int aa = rounds(fr * fr * n);
     const int ab = rounds(fr * (1 - fr) * 2 * n);
     ////// set genes for resource use ///////
     for (int j = 1; j <= 10; ++j) {
         GerateRandomperm(static_cast<short>(n), tur);
-        for (int i = 1; i <= aa; ++i) {
-            ge1[tur[i]] = 1;
-            ge2[tur[i]] = 1;
-        }
-        for (int i = aa + 1; i <= aa + ab; ++i) {
-            ge1[tur[i]] = 1;
-            ge2[tur[i]] = 0;
-        }
-        for (int i = aa + ab + 1; i <= n; ++i) {
-            ge1[tur[i]] = 0;
-            ge2[tur[i]] = 0;
+        for (int i = 1; i <= n; ++i) {
+            ge1[tur[i]] = (i <= aa + ab);
+            ge2[tur[i]] = (i <= aa);
         }
         size_t i = 1;
         for (std::list<Cball>::iterator individual = list1->begin(); individual != list1->end(); ++individual, ++i) {
@@ -214,17 +201,9 @@ void Newball2008(int n, int male, std::list<Cball>* list1, double fr) {
     // genes 1 and 0 at 3 loci are randomly allocated for all the individuals
     for (int j = 11 + (nloci - nopoly) / 2; j <= 10 + (nloci - nopoly) / 2 + nopoly; ++j) {
         GerateRandomperm(static_cast<short>(n), tur);
-        for (int i = 1; i <= aa; ++i) {
-            ge1[tur[i]] = 1;
-            ge2[tur[i]] = 1;
-        }
-        for (int i = aa + 1; i <= aa + ab; ++i) {
-            ge1[tur[i]] = 1;
-            ge2[tur[i]] = 0;
-        }
-        for (int i = aa + ab + 1; i <= n; ++i){
-            ge1[tur[i]] = 0;
-            ge2[tur[i]] = 0;
+        for (int i = 1; i <= n; ++i) {
+            ge1[tur[i]] = (i <= aa + ab);
+            ge2[tur[i]] = (i <= aa);
         }
         size_t i = 1;
         for (std::list<Cball>::iterator individual = list1->begin(); individual != list1->end(); ++individual, ++i) {
