@@ -5,10 +5,12 @@
 class Cball {
     typedef short gene[140];
   public:
-    Cball (int x, int y, int s)
+    Cball(int x, int y, int s)
     : xp(x), yp(y), sexi(s),
       nomating(0),
       fitness(0), dfitness(0), mdistance(0) {}
+    Cball(const std::vector<int>&);
+
     // initialize genes
     void Igene(int nthgene, short gf, short gl) {
          gene1[nthgene] = gf;

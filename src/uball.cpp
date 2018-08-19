@@ -140,32 +140,34 @@ void Cball::measurefitness(double RR, double gradient, double Vs, double K, doub
     fitness = prnd(dfitness);
 }
 
+Cball::Cball(const std::vector<int>& row)
+: xp(row[0]), yp(row[1]), sexi(row[2]),
+  nomating(0), fitness(0), dfitness(0), mdistance(0) {
+    for (size_t col = 3; col < row.size(); ++col) {
+        const int col_8 = static_cast<int>(col) + 8;
+        if (row[col] == 0) Igene(col_8, 0, 0);
+        if (row[col] == 2) Igene(col_8, 1, 1);
+        if (row[col] == 1) {
+            if (randombit() == 0) {
+                Igene(col_8, 1, 0);
+            } else {
+                Igene(col_8, 0, 1);
+            }
+        }
+    }
+    //////////// set genes for resource use ///////
+    for (int j = 1; j <= 10; ++j) {
+        Igene(j, randombit(), randombit());
+    }
+}
+
 // Create new indiviaul
 void Newball(std::list<Cball>* list1) {
     //// creat n individuals and initialize position and sex
-    const std::vector<std::vector<int> > vecvecint = read_int_array("TestInput.txt");
-    nloci = static_cast<int>(vecvecint[0].size() - 3);
-    for (size_t row = 0; row < vecvecint.size(); ++row) {
-        Cball child(vecvecint[row][0], vecvecint[row][1], vecvecint[row][2]);
-        for (size_t col = 3; col < vecvecint[row].size(); ++col) {
-            const int col_8 = static_cast<int>(col) + 8;
-            if (vecvecint[row][col] == 0) child.Igene(col_8, 0, 0);
-            if (vecvecint[row][col] == 2) child.Igene(col_8, 1, 1);
-            if (vecvecint[row][col] == 1) {
-                if (randombit() == 0) {
-                    child.Igene(col_8, 1, 0);
-                } else {
-                    child.Igene(col_8, 0, 1);
-                }
-            }
-        }
-        list1->push_back(child);
-    }
-    //////////// set genes for resource use ///////
-    for (std::list<Cball>::iterator individual = list1->begin(); individual != list1->end(); ++individual) {
-        for (int j = 1; j <= 10; ++j) {
-            individual->Igene(j, randombit(), randombit());
-        }
+    const std::vector<std::vector<int> > matrix = read_int_array("TestInput.txt");
+    nloci = static_cast<int>(matrix[0].size() - 3);
+    for (size_t row = 0; row < matrix.size(); ++row) {
+        list1->push_back(Cball(matrix[row]));
     }
 }
 
