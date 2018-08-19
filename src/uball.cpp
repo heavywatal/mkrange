@@ -86,17 +86,12 @@ void Cball::measurefitness(double RR, double gradient, double Vs, double K, doub
 //Vs fitness function variance, K carring capacity,
     const int xg = static_cast<int>(ceil(xp / 200.0));
     const int yg = static_cast<int>(ceil(yp / 200.0));
-    const int ff = std::max(xg - 1, 1);
-    const int t = yg - 1;
-    const int b = yg + 1;
-    int r = xg + 1;
-    if (r > xrange / 200) {r = xrange / 200;}
     int jj[4];
-    if (t < 1) {
+    if (yg - 1 < 1) {
         jj[1] = 1;
         jj[2] = 2;
         jj[3] = 5;
-    } else if (b > yrange / 200) {
+    } else if (yg + 1 > yrange / 200) {
         jj[1] = 4;
         jj[2] = 5;
         jj[3] = 1;
@@ -106,7 +101,7 @@ void Cball::measurefitness(double RR, double gradient, double Vs, double K, doub
         jj[3] = yg + 1;
     }
     int tot = 0;
-    for (int i = ff; i <= r; ++i) {
+    for (int i = std::max(xg - 1, 1); i <= std::min(xg + 1, xrange / 200); ++i) {
         for (int j = 1; j <= 3; ++j) {
             const std::vector<std::list<Cball>::iterator> grid_ij = gridindiv[i][jj[j]];
             for (size_t k = 0; k < grid_ij.size(); ++k) {
@@ -127,16 +122,21 @@ void Cball::measurefitness(double RR, double gradient, double Vs, double K, doub
     //// calculate fitness
     double Sx = 0.0;
     if (xmi > 0 || xma > 0) {// BK
-        int AA = xrange / 2 - xmi;
-        int BB = xma - xrange / 2;
-        if (xp >= xrange / 2 - AA && xp <= xrange / 2 + BB ) Sx = 16 + gradient * (xrange / 2 - 4000);
-        if (xp < xrange / 2 - AA) Sx = 16 + gradient * (xp - 4000 + AA);
-        if (xp > xrange / 2 + BB) Sx = 16 + gradient * (xp - 4000 - BB);
+        const int AA = xrange / 2 - xmi;
+        const int BB = xma - xrange / 2;
+        if (xp < xrange / 2 - AA) {
+            Sx = 16 + gradient * (xp - 4000 + AA);
+        } else if (xp > xrange / 2 + BB) {
+            Sx = 16 + gradient * (xp - 4000 - BB);
+        } else {
+            Sx = 16 + gradient * (xrange / 2 - 4000);
+        }
     } else {// 2008BK
         Sx = 64 + gradient * (xp - 16000) * (xp - 16000) * (xp - 16000) / 1000000.;
     }
-    dfitness = 2 + RR * (1 - tot / K) - (Sx - ResourceM()) * (Sx - ResourceM()) / (2 * Vs);
-    if (dfitness <= 0) dfitness = 0;
+    const double Sx_resource = Sx - ResourceM();
+    dfitness = 2 + RR * (1 - tot / K) - Sx_resource * Sx_resource / (2 * Vs);
+    if (dfitness < 0) dfitness = 0;
     fitness = prnd(dfitness);
 }
 
