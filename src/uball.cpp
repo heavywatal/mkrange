@@ -162,9 +162,9 @@ Cball::Cball(const std::vector<int>& row)
 }
 
 // Create new indiviaul
-void Newball(std::list<Cball>* list1) {
+void Newball(const char* infile, std::list<Cball>* list1) {
     //// creat n individuals and initialize position and sex
-    const std::vector<std::vector<int> > matrix = read_int_array("TestInput.txt");
+    const std::vector<std::vector<int> > matrix = read_int_array(infile);
     nloci = static_cast<int>(matrix[0].size() - 3);
     for (size_t row = 0; row < matrix.size(); ++row) {
         list1->push_back(Cball(matrix[row]));

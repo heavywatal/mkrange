@@ -20,7 +20,7 @@ int nopoly;
 double allele_effect;
 
 
-int main() {
+int main(int argc, char* argv[]) {
     randomizec();
     lrandomizec();
     int UNUSED;
@@ -88,8 +88,8 @@ int main() {
             lrandomizec();// initialize random number (long type)
             std::list<Cball> alist;// creat list for control individuals
             // Creat individuals
-            if (xmi > 0 || xma > 0) {
-                Newball(&alist);
+            if (argc > 1) {
+                Newball(argv[1], &alist);
             } else {
                 Newball2008(no, nomale, &alist, 0.5);
             }

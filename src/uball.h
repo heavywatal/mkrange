@@ -30,7 +30,7 @@ class Cball {
     std::vector<std::list<Cball>::iterator> candidatemate;
 };
 
-void Newball(std::list<Cball>* list1);
+void Newball(const char* infile, std::list<Cball>* list1);
 void Newball2008(int n, int male, std::list<Cball>* list1, double fr);
 void SaveF(const std::list<Cball>& clist, int g, int gg, size_t n, int nogene);
 void SaveE(int g, int gg);
