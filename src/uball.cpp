@@ -20,13 +20,12 @@ extern double allele_effect;
 std::vector<std::list<Cball>::iterator> gridindiv[162][7];
 
 // calculate resouce use phenotypes from the genotype
-double Cball::ResourceM() const {
-    double sum = 0;
+void Cball::set_resource() {
+    resource_ = 0.0;
     for (int i = 11; i <= 10 + nloci; ++i) {
-        sum += allele_effect * (gene1[i] + gene2[i]);
+        resource_ += allele_effect * (gene1[i] + gene2[i]);
     }
-    sum += nrnd(std::sqrt(Vp));
-    return sum;
+    resource_ += nrnd(std::sqrt(Vp));
 }
 
 double Cball::distance(const Cball& other) const {
@@ -74,6 +73,7 @@ void Cball::nreproduction (const Cball& male, std::list<Cball>* ablist, int noge
             for (int i = 1; i <= nogene; ++i) {
                 child.Igene(i, og1[i], og2[i]);// offspring genes
             }
+            child.set_resource();
             ablist->push_back(child);// add offspring the list
         }
     }
@@ -133,15 +133,14 @@ void Cball::measurefitness(double RR, double gradient, double Vs, double K, doub
     } else {// 2008BK
         Sx = 64 + gradient * (xp - 16000) * (xp - 16000) * (xp - 16000) / 1000000.;
     }
-    const double Sx_resource = Sx - ResourceM();
-    dfitness = 2 + RR * (1 - tot / K) - Sx_resource * Sx_resource / (2 * Vs);
+    dfitness = 2 + RR * (1 - tot / K) - (Sx - resource()) * (Sx - resource()) / (2 * Vs);
     if (dfitness < 0) dfitness = 0;
     fitness = prnd(dfitness);
 }
 
 Cball::Cball(const std::vector<int>& row)
 : xp(row[0]), yp(row[1]), sexi(row[2]),
-  nomating(0), fitness(0), dfitness(0) {
+  nomating(0), fitness(0.0), dfitness(0.0), resource_(0.0) {
     for (size_t col = 3; col < row.size(); ++col) {
         const int col_8 = static_cast<int>(col) + 8;
         if (row[col] == 0) Igene(col_8, 0, 0);
@@ -158,6 +157,7 @@ Cball::Cball(const std::vector<int>& row)
     for (int j = 1; j <= 10; ++j) {
         Igene(j, randombit(), randombit());
     }
+    set_resource();
 }
 
 // Create new indiviaul
@@ -216,6 +216,9 @@ void Newball2008(int n, int male, std::list<Cball>* list1, double fr) {
             individual->Igene(j, 0, 0);
         }
     }
+    for (std::list<Cball>::iterator individual = list1->begin(); individual != list1->end(); ++individual) {
+        individual->set_resource();
+    }
     delete[] tur;
 }
 
@@ -255,7 +258,7 @@ void SaveF(const std::list<Cball>& clist, int g, int gg, size_t n, int nogene) {
     std::list<Cball>::const_iterator it = clist.begin();
     for (size_t i = 0; i < n; ++it, ++i) {
         const int m1 = it->sexi;
-        const double m2 = it->ResourceM();
+        const double m2 = it->resource();
         const double m3 = (m1 == 0) ? it->fitness : it->dfitness;
         fprintf(fp, "%d\t %d\t %d\t %f\t  %7.3f\t", it->xp, it->yp, m1, m2, m3);
         for (long ge = 1; ge <= nogene; ++ge) {
