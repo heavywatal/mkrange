@@ -8,7 +8,7 @@ class Cball {
     Cball(int x, int y, int s)
     : xp(x), yp(y), sexi(s),
       nomating(0),
-      fitness(0), dfitness(0), mdistance(0) {}
+      fitness(0), dfitness(0) {}
     Cball(const std::vector<int>&);
 
     // initialize genes
@@ -25,7 +25,7 @@ class Cball {
 
     int xp, yp, sexi;
     int nomating;
-    double fitness, dfitness, mdistance;
+    double fitness, dfitness;
     gene gene1, gene2, genotype;
     std::vector<std::list<Cball>::iterator> candidatemate;
 };

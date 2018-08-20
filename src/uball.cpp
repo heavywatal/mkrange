@@ -39,7 +39,6 @@ double Cball::distance(const Cball& other) const {
 // reproduction
 void Cball::nreproduction (const Cball& male, std::list<Cball>* ablist, int nogene, double mdis, double fdis, double mr, double nmr) {
     ++nomating;
-    mdistance = distance(male);
     const int nooffspring = static_cast<int>(fitness);
     std::vector<short> og1(nogene + 1);
     std::vector<short> og2(nogene + 1);
@@ -142,7 +141,7 @@ void Cball::measurefitness(double RR, double gradient, double Vs, double K, doub
 
 Cball::Cball(const std::vector<int>& row)
 : xp(row[0]), yp(row[1]), sexi(row[2]),
-  nomating(0), fitness(0), dfitness(0), mdistance(0) {
+  nomating(0), fitness(0), dfitness(0) {
     for (size_t col = 3; col < row.size(); ++col) {
         const int col_8 = static_cast<int>(col) + 8;
         if (row[col] == 0) Igene(col_8, 0, 0);

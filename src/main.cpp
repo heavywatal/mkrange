@@ -140,22 +140,13 @@ int main(int argc, char* argv[]) {
                         }
                     }
                     if (y % genS == 0 || y == 1) {
-                        // NOTE: save only parents?
                         SaveF(alist, y, gggg, num_parents, nogene);
                         SaveA(alist, y, gggg, num_parents, noclas);
                     }
-                    double mdis = 0.0;
-                    size_t nn = 0;
-                    std::list<Cball>::iterator individual = alist.begin();
-                    for (size_t i = 1; i <= num_parents; ++i) {
-                        if (individual->sexi == 0 && individual->fitness > 0) {
-                            mdis += individual->mdistance*individual->mdistance;
-                            ++nn;
-                        }
-                        individual = alist.erase(individual);// crear parents
+                    std::list<Cball>::iterator it = alist.begin();
+                    for (size_t i = 0; i < num_parents; ++i) {
+                        it = alist.erase(it);// clear parents
                     }
-                    mdis = std::sqrt(mdis / nn);
-                    //NOTE: mdis is not used!!
                 }
             }// y no generation
         }
