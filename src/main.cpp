@@ -21,6 +21,8 @@ double allele_effect;
 
 
 int main(int argc, char* argv[]) {
+    if (argc < 2) throw std::runtime_error("too few arguments");
+    const std::string gradient(argv[1]);
     randomizec();
     lrandomizec();
     int UNUSED;
@@ -53,6 +55,8 @@ int main(int argc, char* argv[]) {
             fin           >> xmi
                 >> buffer >> xma
                 >> buffer;
+        } else if (gradient == "flat") {
+            throw std::runtime_error("Inputfile lacks flatmin/flatmax");
         }
         fin           >> no           // initial number of individuals
             >> buffer >> Vp           // phenotypic variance
@@ -74,6 +78,11 @@ int main(int argc, char* argv[]) {
             >> buffer >> mdispersal;  // dispersal distance of males
     }
     ///////////////////////////////////////
+    if (gradient == "linear") {
+        xmi = -1;// global flag for measurefitness()
+    } else if (gradient != "flat" && gradient != "steep") {
+        throw std::runtime_error("invalid gradient choice: " + gradient);
+    }
     const int nomale = static_cast<int>(no / 2); // initial number of males
     const double fdispersal = mdispersal;
     const int nogene = nloci + 10;
@@ -88,8 +97,8 @@ int main(int argc, char* argv[]) {
             lrandomizec();// initialize random number (long type)
             std::list<Cball> alist;// creat list for control individuals
             // Creat individuals
-            if (argc > 1) {
-                Newball(argv[1], &alist);
+            if (argc > 2) {
+                Newball(argv[2], &alist);
             } else {
                 Newball2008(no, nomale, &alist, 0.5);
             }

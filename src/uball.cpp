@@ -120,7 +120,7 @@ void Cball::measurefitness(double RR, double gradient, double Vs, double K, doub
     }
     //// calculate fitness
     double Sx = 0.0;
-    if (xmi > 0 || xma > 0) {// BK
+    if (xmi > 0 || xma > 0) {// flat BK
         const int AA = xrange / 2 - xmi;
         const int BB = xma - xrange / 2;
         if (xp < xrange / 2 - AA) {
@@ -130,7 +130,9 @@ void Cball::measurefitness(double RR, double gradient, double Vs, double K, doub
         } else {
             Sx = 16 + gradient * (xrange / 2 - 4000);
         }
-    } else {// 2008BK
+    } else if (xmi < 0) {// linear
+        Sx = 16 + gradient * (xp - 4000);
+    } else {// steep 2008BK
         Sx = 64 + gradient * (xp - 16000) * (xp - 16000) * (xp - 16000) / 1000000.;
     }
     dfitness = 2 + RR * (1 - tot / K) - (Sx - resource()) * (Sx - resource()) / (2 * Vs);
