@@ -6,6 +6,7 @@
 #include "ucrandom.h"
 #include "uball.h"
 #include "read_array.hpp"
+#include "random.hpp"
 
 extern int xrange;
 extern int minxrange;
@@ -16,6 +17,7 @@ extern double Vp;
 extern int nloci;
 extern int nopoly;
 extern double allele_effect;
+extern std::mt19937 engine;
 
 std::vector<std::list<Cball>::iterator> gridindiv[162][7];
 
@@ -45,8 +47,8 @@ void Cball::nreproduction (const Cball& male, std::list<Cball>* ablist, int noge
         for (int j = 1; j<= nooffspring; ++j) {
             for (int k = 1; k<= nogene; ++k) {
                 // inheritance genes from mother and father
-                og1[k] = randombit() ? gene1[k] : gene2[k];
-                og2[k] = randombit() ? male.gene1[k] : male.gene2[k];
+                og1[k] = wtl::randombit(engine) ? gene1[k] : gene2[k];
+                og2[k] = wtl::randombit(engine) ? male.gene1[k] : male.gene2[k];
                 ///////// mutation ////////
                 const double mrr = (k > 10) ? mr : nmr;
                 if (longurnd() < mrr) {
@@ -56,7 +58,7 @@ void Cball::nreproduction (const Cball& male, std::list<Cball>* ablist, int noge
                     og2[k] = (og2[k] == 1) ? 0 : 1;
                 }
             }
-            const int gg = randombit();// determin offspring sex
+            const int gg = wtl::randombit(engine);// determin offspring sex
             const double sddispersal = (gg == 0) ? fdis : mdis;
             long nx = 0;
             long ny = 0;
@@ -148,7 +150,7 @@ Cball::Cball(const std::vector<int>& row)
         if (row[col] == 0) Igene(col_8, 0, 0);
         if (row[col] == 2) Igene(col_8, 1, 1);
         if (row[col] == 1) {
-            if (randombit() == 0) {
+            if (wtl::randombit(engine) == 0) {
                 Igene(col_8, 1, 0);
             } else {
                 Igene(col_8, 0, 1);
@@ -157,7 +159,7 @@ Cball::Cball(const std::vector<int>& row)
     }
     //////////// set genes for resource use ///////
     for (int j = 1; j <= 10; ++j) {
-        Igene(j, randombit(), randombit());
+        Igene(j, wtl::randombit(engine), wtl::randombit(engine));
     }
     set_resource();
 }

@@ -8,6 +8,7 @@
 #include <list>
 #include "ucrandom.h"
 #include "uball.h"
+#include "random.hpp"
 
 int xrange;
 int minxrange;
@@ -18,7 +19,7 @@ double Vp;
 int nloci;
 int nopoly;
 double allele_effect;
-
+std::mt19937 engine;
 
 int main(int argc, char* argv[]) {
     if (argc < 2) throw std::runtime_error("too few arguments");
@@ -86,6 +87,8 @@ int main(int argc, char* argv[]) {
     const int nomale = static_cast<int>(no / 2); // initial number of males
     const double fdispersal = mdispersal;
     const int nogene = nloci + 10;
+    std::random_device seeder;
+    engine.seed(seeder());
     for (int prep = 1; prep <= 1; ++prep) {
         std::cout << "no of loci x effect x 2 =" << nloci*allele_effect*2 << std::endl;
         std::cout << "gradient x xmax(=x range)=" << G*xrange << std::endl;
