@@ -178,7 +178,8 @@ void Newball(const char* infile, std::list<Cball>* list1) {
 }
 
 void Newball2008(int n, int male, std::list<Cball>* list1, double fr) {
-    short *tur = new short[n+1];
+    std::vector<short> tur(n);
+    std::iota(tur.begin(), tur.end(), 0);
     std::vector<short> ge1(n + 1);
     std::vector<short> ge2(n + 1);
     std::uniform_int_distribution<int> uniform_x(1, 500);
@@ -193,10 +194,10 @@ void Newball2008(int n, int male, std::list<Cball>* list1, double fr) {
     const int ab = std::round(fr * (1 - fr) * 2 * n);
     ////// set genes for resource use ///////
     for (int j = 1; j <= 10; ++j) {
-        GerateRandomperm(static_cast<short>(n), tur);
-        for (int i = 1; i <= n; ++i) {
-            ge1[tur[i]] = (i <= aa + ab);
-            ge2[tur[i]] = (i <= aa);
+        std::shuffle(tur.begin(), tur.end(), engine);
+        for (int i = 0; i < n; ++i) {
+            ge1[tur[i] + 1] = (i < aa + ab);
+            ge2[tur[i] + 1] = (i < aa);
         }
         size_t i = 1;
         for (std::list<Cball>::iterator individual = list1->begin(); individual != list1->end(); ++individual, ++i) {
@@ -210,10 +211,10 @@ void Newball2008(int n, int male, std::list<Cball>* list1, double fr) {
     }
     // genes 1 and 0 at 3 loci are randomly allocated for all the individuals
     for (int j = 11 + (nloci - nopoly) / 2; j <= 10 + (nloci - nopoly) / 2 + nopoly; ++j) {
-        GerateRandomperm(static_cast<short>(n), tur);
-        for (int i = 1; i <= n; ++i) {
-            ge1[tur[i]] = (i <= aa + ab);
-            ge2[tur[i]] = (i <= aa);
+        std::shuffle(tur.begin(), tur.end(), engine);
+        for (int i = 0; i < n; ++i) {
+            ge1[tur[i] + 1] = (i < aa + ab);
+            ge2[tur[i] + 1] = (i < aa);
         }
         size_t i = 1;
         for (std::list<Cball>::iterator individual = list1->begin(); individual != list1->end(); ++individual, ++i) {
@@ -228,7 +229,6 @@ void Newball2008(int n, int male, std::list<Cball>* list1, double fr) {
     for (std::list<Cball>::iterator individual = list1->begin(); individual != list1->end(); ++individual) {
         individual->set_resource();
     }
-    delete[] tur;
 }
 
 ///// serach for candidate mates
