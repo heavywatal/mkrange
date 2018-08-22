@@ -189,8 +189,8 @@ void Newball2008(int n, int male, std::list<Cball>* list1, double fr) {
         const int yy = uniform_y(engine);
         list1->push_back(Cball(xx, yy, i <= male));
     }
-    const int aa = rounds(fr * fr * n);
-    const int ab = rounds(fr * (1 - fr) * 2 * n);
+    const int aa = std::round(fr * fr * n);
+    const int ab = std::round(fr * (1 - fr) * 2 * n);
     ////// set genes for resource use ///////
     for (int j = 1; j <= 10; ++j) {
         GerateRandomperm(static_cast<short>(n), tur);
