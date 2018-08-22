@@ -8,3 +8,5 @@ build/
 *.zip
 RangeW_Data
 Range.1
+*.out
+*.o
