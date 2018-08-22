@@ -27,7 +27,8 @@ void Cball::set_resource() {
     for (int i = 11; i <= 10 + nloci; ++i) {
         resource_ += allele_effect * (gene1[i] + gene2[i]);
     }
-    resource_ += nrnd(std::sqrt(Vp));
+    std::normal_distribution<double> normal(0.0, std::sqrt(Vp));
+    resource_ += normal(engine);
 }
 
 double Cball::distance(const Cball& other) const {
@@ -51,20 +52,21 @@ void Cball::nreproduction (const Cball& male, std::list<Cball>* ablist, int noge
                 og2[k] = wtl::randombit(engine) ? male.gene1[k] : male.gene2[k];
                 ///////// mutation ////////
                 const double mrr = (k > 10) ? mr : nmr;
-                if (longurnd() < mrr) {
+                if (wtl::bernoulli(mrr, engine)) {
                     og1[k] = (og1[k] == 1) ? 0 : 1;
                 }
-                if (longurnd() < mrr) {
+                if (wtl::bernoulli(mrr, engine)) {
                     og2[k] = (og2[k] == 1) ? 0 : 1;
                 }
             }
             const int gg = wtl::randombit(engine);// determin offspring sex
             const double sddispersal = (gg == 0) ? fdis : mdis;
+            std::normal_distribution<double> normal(0.0, sddispersal);
             long nx = 0;
             long ny = 0;
             do {//// desersal
                 // random number from normal distribtion with sddispersal standard deviationa and 0 mean
-                const double didi = nrnd(sddispersal);
+                const double didi = normal(engine);
                 const long d = static_cast<long>(std::abs(didi));
                 randomove(xp, yp, d, &nx, &ny);
                 if (ny > yrange) ny = ny - yrange;
@@ -139,7 +141,8 @@ void Cball::measurefitness(double RR, double gradient, double Vs, double K, doub
     }
     dfitness = 2 + RR * (1 - tot / K) - (Sx - resource()) * (Sx - resource()) / (2 * Vs);
     if (dfitness < 0) dfitness = 0;
-    fitness = prnd(dfitness);
+    std::poisson_distribution<int> poisson(dfitness);
+    fitness = poisson(engine);
 }
 
 Cball::Cball(const std::vector<int>& row)
@@ -178,10 +181,12 @@ void Newball2008(int n, int male, std::list<Cball>* list1, double fr) {
     short *tur = new short[n+1];
     std::vector<short> ge1(n + 1);
     std::vector<short> ge2(n + 1);
+    std::uniform_int_distribution<int> uniform_x(1, 500);
+    std::uniform_int_distribution<int> uniform_y(1, yrange);
     // creat n individuals and initialize position and sex
     for (int i = 1; i <= n; ++i) {
-        const int xx = rndfrom1(500) + xrange / 2 - 250;
-        const int yy = rndfrom1(static_cast<short>(yrange));
+        const int xx = uniform_x(engine) + xrange / 2 - 250;
+        const int yy = uniform_y(engine);
         list1->push_back(Cball(xx, yy, i <= male));
     }
     const int aa = rounds(fr * fr * n);
@@ -244,7 +249,8 @@ size_t Cball::matingcount(int matingsize) const {
     if (total_fitness > 0.0) {
         double sum = 0.0;
         unsigned i = 0;
-        const double r = urnd() * total_fitness;
+        std::uniform_real_distribution<double> uniform(0.0, total_fitness);
+        const double r = uniform(engine);
         do {
             sum += candidatemate[indices[i]]->dfitness;
             ++i;
