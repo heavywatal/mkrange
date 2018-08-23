@@ -3,7 +3,6 @@
 #include <cstdio>
 #include <sstream>
 #include <iostream>
-#include "ucrandom.h"
 #include "uball.h"
 #include "read_array.hpp"
 #include "random.hpp"
@@ -62,13 +61,14 @@ void Cball::nreproduction (const Cball& male, std::list<Cball>* ablist, int noge
             const int gg = wtl::randombit(engine);// determin offspring sex
             const double sddispersal = (gg == 0) ? fdis : mdis;
             std::normal_distribution<double> normal(0.0, sddispersal);
-            long nx = 0;
-            long ny = 0;
+            int nx = 0;
+            int ny = 0;
             do {//// desersal
                 // random number from normal distribtion with sddispersal standard deviationa and 0 mean
-                const double didi = normal(engine);
-                const long d = static_cast<long>(std::abs(didi));
-                randomove(xp, yp, d, &nx, &ny);
+                const double radius = std::abs(normal(engine));
+                std::vector<int> dxdy = wtl::randomove(radius, engine);
+                nx = xp + dxdy[0];
+                ny = yp + dxdy[1];
                 if (ny > yrange) ny = ny - yrange;
                 if (ny <= 0) ny = yrange + ny;
             } while ((nx <= minxrange) || (nx > xrange ) || (ny <= 0) || (ny > yrange));
