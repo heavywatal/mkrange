@@ -65,10 +65,8 @@ void Cball::nreproduction (const Cball& male, std::list<Cball>* ablist, int noge
             int ny = 0;
             do {//// desersal
                 // random number from normal distribtion with sddispersal standard deviationa and 0 mean
-                const double radius = std::abs(normal(engine));
-                std::vector<int> dxdy = wtl::randomove(radius, engine);
-                nx = xp + dxdy[0];
-                ny = yp + dxdy[1];
+                nx = xp + normal(engine);
+                ny = yp + normal(engine);
                 if (ny > yrange) ny = ny - yrange;
                 if (ny <= 0) ny = yrange + ny;
             } while ((nx <= minxrange) || (nx > xrange ) || (ny <= 0) || (ny > yrange));
