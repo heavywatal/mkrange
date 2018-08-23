@@ -6,7 +6,6 @@
 #include <iostream>
 #include <fstream>
 #include <list>
-#include "ucrandom.h"
 #include "uball.h"
 #include "random.hpp"
 
@@ -24,8 +23,6 @@ std::mt19937 engine;
 int main(int argc, char* argv[]) {
     if (argc < 2) throw std::runtime_error("too few arguments");
     const std::string gradient(argv[1]);
-    randomizec();
-    lrandomizec();
     int UNUSED;
     int no;
     int homeranges;
@@ -96,8 +93,6 @@ int main(int argc, char* argv[]) {
             if (nloci * allele_effect * 2 - G * xrange > 1e-6) norepeat = 0;
         }
         for (int gggg = 1; gggg <= norepeat; ++gggg) {
-            randomizec();// initialize random number (short type)
-            lrandomizec();// initialize random number (long type)
             std::list<Cball> alist;// creat list for control individuals
             // Creat individuals
             if (argc > 2) {
@@ -122,10 +117,6 @@ int main(int argc, char* argv[]) {
                     // print no of generations and no of individuals
                 }
                 if (itemP > 0) {// itemP= number of individuals
-                    if (y % 10){
-                        randomizec();// initialize random number (short type)
-                        lrandomizec();
-                    }
                     // Measure fitness for each individual
                     for (std::list<Cball>::iterator it = alist.begin(); it != alist.end(); ++it) {
                         it->measurefitness(reprate, G, VS, CC, homeranges, sizemating);
