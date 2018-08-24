@@ -9,8 +9,8 @@ class Cball {
     : xp(x), yp(y), sexi(s),
       gene1(g1), gene2(g2),
       nomating(0),
-      fitness(0), dfitness(0),
-      resource_(0) {
+      dfitness(0.0), nooffspring(0),
+      resource_(0.0) {
         set_resource();
     }
     Cball(const std::vector<int>&);
@@ -31,7 +31,8 @@ class Cball {
     int xp, yp, sexi;
     std::vector<short> gene1, gene2;
     int nomating;
-    double fitness, dfitness;
+    double dfitness;
+    int nooffspring;
     std::vector<std::list<Cball>::iterator> candidatemate;
   private:
     double resource_;

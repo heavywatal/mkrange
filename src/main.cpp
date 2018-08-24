@@ -128,7 +128,7 @@ int main(int argc, char* argv[]) {
                     for (std::list<Cball>::iterator it = alist.begin(); it != alist.end(); ++it) {
                         if (it->xp > maxx) maxx = it->xp;
                         if (it->xp < minx) minx = it->xp;
-                        if (it->sexi == 0 && it->fitness > 0) {
+                        if (it->sexi == 0 && it->nooffspring > 0) {
                             // choose female having nonzero fitness
                             // Search candidate mates :
                             // female search candidate mates

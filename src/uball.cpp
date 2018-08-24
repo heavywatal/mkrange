@@ -55,7 +55,6 @@ std::vector<short> Cball::make_gamete(const double mr, const double nmr) const {
 // reproduction
 void Cball::nreproduction(const Cball& male, std::list<Cball>* ablist, double mdis, double fdis, double mr, double nmr) {
     ++nomating;
-    const int nooffspring = static_cast<int>(fitness);
     for (int i = 0; i < nooffspring; ++i) {
         const int gg = wtl::randombit(engine);// determin offspring sex
         const double sddispersal = (gg == 0) ? fdis : mdis;
@@ -135,13 +134,13 @@ void Cball::measurefitness(double RR, double gradient, double Vs, double K, doub
     dfitness = 2 + RR * (1 - tot / K) - (Sx - resource()) * (Sx - resource()) / (2 * Vs);
     if (dfitness < 0) dfitness = 0;
     std::poisson_distribution<int> poisson(dfitness);
-    fitness = poisson(engine);
+    nooffspring = poisson(engine);
 }
 
 Cball::Cball(const std::vector<int>& row)
 : xp(row[0]), yp(row[1]), sexi(row[2]),
   gene1(row.size() - 3 + 10 + 1), gene2(gene1.size()),
-  nomating(0), fitness(0.0), dfitness(0.0), resource_(0.0) {
+  nomating(0), dfitness(0.0), nooffspring(0), resource_(0.0) {
     for (size_t col = 3; col < row.size(); ++col) {
         const int col_8 = static_cast<int>(col) + 8;
         if (row[col] == 2) Igene(col_8, 1, 1);
@@ -230,7 +229,7 @@ size_t Cball::matingcount(int matingsize) const {
     std::vector<size_t> indices;
     indices.reserve(candidatemate.size());
     for (size_t i = 0; i < candidatemate.size(); ++i) {
-        if (candidatemate[i]->fitness > 0) {
+        if (candidatemate[i]->nooffspring > 0) {
             const double dist = distance(*candidatemate[i]);
             if (dist <= matingsize) {
                 /// count and save candidate male
@@ -262,7 +261,7 @@ void SaveF(const std::list<Cball>& clist, int g, int gg, size_t n, int nogene) {
     for (size_t i = 0; i < n; ++it, ++i) {
         const int m1 = it->sexi;
         const double m2 = it->resource();
-        const double m3 = (m1 == 0) ? it->fitness : it->dfitness;
+        const double m3 = (m1 == 0) ? it->nooffspring : it->dfitness;
         fprintf(fp, "%d\t %d\t %d\t %f\t  %7.3f\t", it->xp, it->yp, m1, m2, m3);
         for (long ge = 1; ge <= nogene; ++ge) {
             fprintf(fp, "%d\t ", it->gene1[ge]+ it->gene2[ge]);
@@ -292,7 +291,7 @@ void SaveA(const std::list<Cball>& clist, int g, int gg, size_t n, int clas) {
         for (size_t i = 0; i < n; ++it, ++i) {
             if(it->sexi == 0) {
                 if(w * x < it->xp && it->xp <= w * (x + 1)) {
-                    avfit[x] += it->fitness;
+                    avfit[x] += it->nooffspring;
                     nof[x] += 1;
                 }
             }
