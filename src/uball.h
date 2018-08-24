@@ -4,12 +4,15 @@
 
 class Cball {
   public:
-    Cball(int x, int y, int s)
+    Cball(int x, int y, int s,
+          const std::vector<short>& g1, const std::vector<short>& g2)
     : xp(x), yp(y), sexi(s),
+      gene1(g1), gene2(g2),
       nomating(0),
       fitness(0), dfitness(0),
-      gene1(140, 0), gene2(140, 0),
-      resource_(0) {}
+      resource_(0) {
+        set_resource();
+    }
     Cball(const std::vector<int>&);
 
     // initialize genes
@@ -25,9 +28,9 @@ class Cball {
     double resource() const {return resource_;};
 
     int xp, yp, sexi;
+    std::vector<short> gene1, gene2;
     int nomating;
     double fitness, dfitness;
-    std::vector<short> gene1, gene2;
     std::vector<std::list<Cball>::iterator> candidatemate;
   private:
     double resource_;

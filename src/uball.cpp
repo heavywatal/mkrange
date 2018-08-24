@@ -71,12 +71,8 @@ void Cball::nreproduction (const Cball& male, std::list<Cball>* ablist, int noge
                 if (ny <= 0) ny = yrange + ny;
             } while ((nx <= minxrange) || (nx > xrange ) || (ny <= 0) || (ny > yrange));
             // Initialize offspring position and sex
-            Cball child(static_cast<int>(nx), static_cast<int>(ny), gg);
-            for (int i = 1; i <= nogene; ++i) {
-                child.Igene(i, og1[i], og2[i]);// offspring genes
-            }
-            child.set_resource();
-            ablist->push_back(child);// add offspring the list
+            // add offspring the list
+            ablist->push_back(Cball(static_cast<int>(nx), static_cast<int>(ny), gg, og1, og2));
         }
     }
 }
@@ -145,8 +141,8 @@ void Cball::measurefitness(double RR, double gradient, double Vs, double K, doub
 
 Cball::Cball(const std::vector<int>& row)
 : xp(row[0]), yp(row[1]), sexi(row[2]),
-  nomating(0), fitness(0.0), dfitness(0.0),
-  gene1(row.size() - 3 + 10 + 1), gene2(gene1.size()), resource_(0.0) {
+  gene1(row.size() - 3 + 10 + 1), gene2(gene1.size()),
+  nomating(0), fitness(0.0), dfitness(0.0), resource_(0.0) {
     for (size_t col = 3; col < row.size(); ++col) {
         const int col_8 = static_cast<int>(col) + 8;
         if (row[col] == 2) Igene(col_8, 1, 1);
@@ -186,7 +182,7 @@ void Newball2008(int n, int male, std::list<Cball>* list1, double fr) {
     for (int i = 1; i <= n; ++i) {
         const int xx = uniform_x(engine) + xrange / 2 - 250;
         const int yy = uniform_y(engine);
-        list1->push_back(Cball(xx, yy, i <= male));
+        list1->push_back(Cball(xx, yy, i <= male, std::vector<short>(nloci + 10 + 1), std::vector<short>(nloci + 10 + 1)));
     }
     const int aa = std::round(fr * fr * n);
     const int ab = std::round(fr * (1 - fr) * 2 * n);
