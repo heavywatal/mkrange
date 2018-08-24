@@ -138,7 +138,7 @@ int main(int argc, char* argv[]) {
                                 const Cball& male = *it->candidatemate[nofm];
                                 // give birth to young
                                 // mp is a chosen male
-                                it->nreproduction(male, &alist, nogene, mdispersal, fdispersal, mutationr, nem);
+                                it->nreproduction(male, &alist, mdispersal, fdispersal, mutationr, nem);
                             }
                         }
                     }

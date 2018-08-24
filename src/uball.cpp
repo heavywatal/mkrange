@@ -37,43 +37,42 @@ double Cball::distance(const Cball& other) const {
     return std::min(dist1, dist2);
 }
 
+std::vector<short> Cball::make_gamete(const double mr, const double nmr) const {
+    std::vector<short> gamete = gene1;
+    for (size_t i=0; i<gamete.size(); ++i) {
+        if (wtl::randombit(engine)) {
+            gamete[i] = gene2[i];
+        }
+        ///////// mutation ////////
+        const double mrr = (i > (10 + 1)) ? mr : nmr;
+        if (wtl::bernoulli(mrr, engine)) {
+            gamete[i] = (gamete[i] == 1) ? 0 : 1;
+        }
+    }
+    return gamete;
+}
+
 // reproduction
-void Cball::nreproduction (const Cball& male, std::list<Cball>* ablist, int nogene, double mdis, double fdis, double mr, double nmr) {
+void Cball::nreproduction(const Cball& male, std::list<Cball>* ablist, double mdis, double fdis, double mr, double nmr) {
     ++nomating;
     const int nooffspring = static_cast<int>(fitness);
-    std::vector<short> og1(nogene + 1);
-    std::vector<short> og2(nogene + 1);
-    if (nooffspring > 0) {
-        for (int j = 1; j<= nooffspring; ++j) {
-            for (int k = 1; k<= nogene; ++k) {
-                // inheritance genes from mother and father
-                og1[k] = wtl::randombit(engine) ? gene1[k] : gene2[k];
-                og2[k] = wtl::randombit(engine) ? male.gene1[k] : male.gene2[k];
-                ///////// mutation ////////
-                const double mrr = (k > 10) ? mr : nmr;
-                if (wtl::bernoulli(mrr, engine)) {
-                    og1[k] = (og1[k] == 1) ? 0 : 1;
-                }
-                if (wtl::bernoulli(mrr, engine)) {
-                    og2[k] = (og2[k] == 1) ? 0 : 1;
-                }
-            }
-            const int gg = wtl::randombit(engine);// determin offspring sex
-            const double sddispersal = (gg == 0) ? fdis : mdis;
-            std::normal_distribution<double> normal(0.0, sddispersal);
-            int nx = 0;
-            int ny = 0;
-            do {//// desersal
-                // random number from normal distribtion with sddispersal standard deviationa and 0 mean
-                nx = xp + normal(engine);
-                ny = yp + normal(engine);
-                if (ny > yrange) ny = ny - yrange;
-                if (ny <= 0) ny = yrange + ny;
-            } while ((nx <= minxrange) || (nx > xrange ) || (ny <= 0) || (ny > yrange));
-            // Initialize offspring position and sex
-            // add offspring the list
-            ablist->push_back(Cball(static_cast<int>(nx), static_cast<int>(ny), gg, og1, og2));
-        }
+    for (int i = 0; i < nooffspring; ++i) {
+        const int gg = wtl::randombit(engine);// determin offspring sex
+        const double sddispersal = (gg == 0) ? fdis : mdis;
+        std::normal_distribution<double> normal(0.0, sddispersal);
+        int nx = 0;
+        int ny = 0;
+        do {//// desersal
+            // random number from normal distribtion with sddispersal standard deviationa and 0 mean
+            nx = xp + normal(engine);
+            ny = yp + normal(engine);
+            if (ny > yrange) ny = ny - yrange;
+            if (ny <= 0) ny = yrange + ny;
+        } while ((nx <= minxrange) || (nx > xrange ) || (ny <= 0) || (ny > yrange));
+        // Initialize offspring position and sex
+        // add offspring the list
+        ablist->push_back(Cball(static_cast<int>(nx), static_cast<int>(ny), gg,
+                                make_gamete(mr, nmr), male.make_gamete(mr, nmr)));
     }
 }
 
