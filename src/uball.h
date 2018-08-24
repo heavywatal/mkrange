@@ -3,20 +3,19 @@
 #include <list>
 
 class Cball {
-    typedef short gene[140];
   public:
     Cball(int x, int y, int s)
     : xp(x), yp(y), sexi(s),
       nomating(0),
       fitness(0), dfitness(0),
+      gene1(140, 0), gene2(140, 0),
       resource_(0) {}
     Cball(const std::vector<int>&);
 
     // initialize genes
     void Igene(int nthgene, short gf, short gl) {
-         gene1[nthgene] = gf;
-         gene2[nthgene] = gl;
-         genotype[nthgene] = gf + gl;
+        gene1[nthgene] = gf;
+        gene2[nthgene] = gl;
     }
     void set_resource();
     void nreproduction(const Cball& male, std::list<Cball>* ablist, int nogene, double mdis, double fdis, double mr, double nmr);
@@ -28,7 +27,7 @@ class Cball {
     int xp, yp, sexi;
     int nomating;
     double fitness, dfitness;
-    gene gene1, gene2, genotype;
+    std::vector<short> gene1, gene2;
     std::vector<std::list<Cball>::iterator> candidatemate;
   private:
     double resource_;

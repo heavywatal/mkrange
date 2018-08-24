@@ -145,12 +145,12 @@ void Cball::measurefitness(double RR, double gradient, double Vs, double K, doub
 
 Cball::Cball(const std::vector<int>& row)
 : xp(row[0]), yp(row[1]), sexi(row[2]),
-  nomating(0), fitness(0.0), dfitness(0.0), resource_(0.0) {
+  nomating(0), fitness(0.0), dfitness(0.0),
+  gene1(row.size() - 3 + 10 + 1), gene2(gene1.size()), resource_(0.0) {
     for (size_t col = 3; col < row.size(); ++col) {
         const int col_8 = static_cast<int>(col) + 8;
-        if (row[col] == 0) Igene(col_8, 0, 0);
         if (row[col] == 2) Igene(col_8, 1, 1);
-        if (row[col] == 1) {
+        else if (row[col] == 1) {
             if (wtl::randombit(engine) == 0) {
                 Igene(col_8, 1, 0);
             } else {
