@@ -170,10 +170,6 @@ void Newball(const char* infile, std::list<Cball>* list1) {
 }
 
 void Newball2008(int n, int male, std::list<Cball>* list1, double fr) {
-    std::vector<short> tur(n);
-    std::iota(tur.begin(), tur.end(), 0);
-    std::vector<short> ge1(n + 1);
-    std::vector<short> ge2(n + 1);
     std::uniform_int_distribution<int> uniform_x(1, 500);
     std::uniform_int_distribution<int> uniform_y(1, yrange);
     // creat n individuals and initialize position and sex
@@ -184,14 +180,17 @@ void Newball2008(int n, int male, std::list<Cball>* list1, double fr) {
     }
     const int aa = std::round(fr * fr * n);
     const int ab = std::round(fr * (1 - fr) * 2 * n);
+    std::vector<short> ge1(n);
+    std::vector<short> ge2(n);
+    for (int i = 0; i < n; ++i) {
+        ge1[i] = (i < aa + ab);
+        ge2[i] = (i < aa);
+    }
     ////// set genes for resource use ///////
     for (int j = 1; j <= 10; ++j) {
-        std::shuffle(tur.begin(), tur.end(), engine);
-        for (int i = 0; i < n; ++i) {
-            ge1[tur[i] + 1] = (i < aa + ab);
-            ge2[tur[i] + 1] = (i < aa);
-        }
-        size_t i = 1;
+        std::shuffle(ge1.begin(), ge1.end(), engine);
+        std::shuffle(ge2.begin(), ge2.end(), engine);
+        size_t i = 0;
         for (std::list<Cball>::iterator individual = list1->begin(); individual != list1->end(); ++individual, ++i) {
            individual->Igene(j, ge1[i], ge2[i]);
        }
@@ -203,12 +202,9 @@ void Newball2008(int n, int male, std::list<Cball>* list1, double fr) {
     }
     // genes 1 and 0 at 3 loci are randomly allocated for all the individuals
     for (int j = 11 + (nloci - nopoly) / 2; j <= 10 + (nloci - nopoly) / 2 + nopoly; ++j) {
-        std::shuffle(tur.begin(), tur.end(), engine);
-        for (int i = 0; i < n; ++i) {
-            ge1[tur[i] + 1] = (i < aa + ab);
-            ge2[tur[i] + 1] = (i < aa);
-        }
-        size_t i = 1;
+        std::shuffle(ge1.begin(), ge1.end(), engine);
+        std::shuffle(ge2.begin(), ge2.end(), engine);
+        size_t i = 0;
         for (std::list<Cball>::iterator individual = list1->begin(); individual != list1->end(); ++individual, ++i) {
             individual->Igene(j, ge1[i], ge2[i]);
         }
