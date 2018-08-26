@@ -20,6 +20,24 @@ extern std::mt19937 engine;
 
 std::vector<std::list<Cball>::iterator> gridindiv[162][7];
 
+namespace {
+
+template <class Matrix> inline
+Matrix transpose(const Matrix& A) {
+    const size_t nrow = A.size();
+    if (nrow == 0u) return A;
+    const size_t ncol = A[0u].size();
+    Matrix out(ncol, typename Matrix::value_type(nrow));
+    for (size_t row=0; row<nrow; ++row) {
+        for (size_t col=0; col<ncol; ++col) {
+            out[col][row] = A[row][col];
+        }
+    }
+    return out;
+}
+
+}
+
 // calculate resouce use phenotypes from the genotype
 void Cball::set_resource() {
     resource_ = 0.0;
@@ -170,14 +188,6 @@ void Newball(const char* infile, std::list<Cball>* list1) {
 }
 
 void Newball2008(int n, int male, std::list<Cball>* list1, double fr) {
-    std::uniform_int_distribution<int> uniform_x(1, 500);
-    std::uniform_int_distribution<int> uniform_y(1, yrange);
-    // creat n individuals and initialize position and sex
-    for (int i = 1; i <= n; ++i) {
-        const int xx = uniform_x(engine) + xrange / 2 - 250;
-        const int yy = uniform_y(engine);
-        list1->push_back(Cball(xx, yy, i <= male, std::vector<short>(nloci + 10 + 1), std::vector<short>(nloci + 10 + 1)));
-    }
     const int aa = std::round(fr * fr * n);
     const int ab = std::round(fr * (1 - fr) * 2 * n);
     std::vector<short> ge1(n);
@@ -186,36 +196,42 @@ void Newball2008(int n, int male, std::list<Cball>* list1, double fr) {
         ge1[i] = (i < aa + ab);
         ge2[i] = (i < aa);
     }
+    std::vector<std::vector<short>> matrix1;
+    std::vector<std::vector<short>> matrix2;
+    matrix1.reserve(nloci + 10 + 1);
+    matrix2.reserve(nloci + 10 + 1);
+    matrix1.push_back(std::vector<short>(n, 0));
+    matrix2.push_back(std::vector<short>(n, 0));
     ////// set genes for resource use ///////
     for (int j = 1; j <= 10; ++j) {
         std::shuffle(ge1.begin(), ge1.end(), engine);
         std::shuffle(ge2.begin(), ge2.end(), engine);
-        size_t i = 0;
-        for (std::list<Cball>::iterator individual = list1->begin(); individual != list1->end(); ++individual, ++i) {
-           individual->Igene(j, ge1[i], ge2[i]);
-       }
+        matrix1.push_back(ge1);
+        matrix2.push_back(ge2);
     }
     for (int j = 11; j <= 10 + (nloci - nopoly) / 2; ++j) {
-        for (std::list<Cball>::iterator individual = list1->begin(); individual != list1->end(); ++individual) {
-            individual->Igene(j, 1, 1);
-        }
+        matrix1.push_back(std::vector<short>(n, 1));
+        matrix2.push_back(std::vector<short>(n, 1));
     }
     // genes 1 and 0 at 3 loci are randomly allocated for all the individuals
     for (int j = 11 + (nloci - nopoly) / 2; j <= 10 + (nloci - nopoly) / 2 + nopoly; ++j) {
         std::shuffle(ge1.begin(), ge1.end(), engine);
         std::shuffle(ge2.begin(), ge2.end(), engine);
-        size_t i = 0;
-        for (std::list<Cball>::iterator individual = list1->begin(); individual != list1->end(); ++individual, ++i) {
-            individual->Igene(j, ge1[i], ge2[i]);
-        }
+        matrix1.push_back(ge1);
+        matrix2.push_back(ge2);
     }
     for (int j = 11 + (nloci - nopoly) / 2 + nopoly; j <= 10 + nloci; ++j) {
-        for (std::list<Cball>::iterator individual = list1->begin(); individual != list1->end(); ++individual) {
-            individual->Igene(j, 0, 0);
-        }
+        matrix1.push_back(std::vector<short>(n, 0));
+        matrix2.push_back(std::vector<short>(n, 0));
     }
-    for (std::list<Cball>::iterator individual = list1->begin(); individual != list1->end(); ++individual) {
-        individual->set_resource();
+    matrix1 = transpose(matrix1);
+    matrix2 = transpose(matrix2);
+    std::uniform_int_distribution<int> uniform_x(1, 500);
+    std::uniform_int_distribution<int> uniform_y(1, yrange);
+    for (int i = 0; i < n; ++i) {
+        const int xx = uniform_x(engine) + xrange / 2 - 250;
+        const int yy = uniform_y(engine);
+        list1->push_back(Cball(xx, yy, i < male, matrix1[i], matrix2[i]));
     }
 }
 
