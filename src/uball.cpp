@@ -161,18 +161,22 @@ Cball::Cball(const std::vector<int>& row)
   nomating(0), dfitness(0.0), nooffspring(0), resource_(0.0) {
     for (size_t col = 3; col < row.size(); ++col) {
         const int col_8 = static_cast<int>(col) + 8;
-        if (row[col] == 2) Igene(col_8, 1, 1);
+        if (row[col] == 2) {
+            gene1[col_8] = 1;
+            gene2[col_8] = 1;
+        }
         else if (row[col] == 1) {
             if (wtl::randombit(engine) == 0) {
-                Igene(col_8, 1, 0);
+                gene1[col_8] = 1;
             } else {
-                Igene(col_8, 0, 1);
+                gene2[col_8] = 1;
             }
         }
     }
     //////////// set genes for resource use ///////
-    for (int j = 1; j <= 10; ++j) {
-        Igene(j, wtl::randombit(engine), wtl::randombit(engine));
+    for (int i = 1; i <= 10; ++i) {
+        gene1[i] = wtl::randombit(engine);
+        gene2[i] = wtl::randombit(engine);
     }
     set_resource();
 }

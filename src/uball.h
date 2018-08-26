@@ -16,11 +16,6 @@ class Cball {
     Cball(const std::vector<int>&);
 
     std::vector<short> make_gamete(double mr, double nmr) const;
-    // initialize genes
-    void Igene(int nthgene, short gf, short gl) {
-        gene1[nthgene] = gf;
-        gene2[nthgene] = gl;
-    }
     void set_resource();
     void nreproduction(const Cball& male, std::list<Cball>* ablist, double mdis, double fdis, double mr, double nmr);
     void measurefitness(double RR, double gradient, double Vs, double K, double Range, double MS);
