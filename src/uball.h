@@ -1,4 +1,3 @@
-#include <cstdio>
 #include <vector>
 #include <list>
 
@@ -35,7 +34,7 @@ class Cball {
 
 void Newball(const char* infile, std::list<Cball>* list1);
 void Newball2008(int n, int male, std::list<Cball>* list1, double fr);
-void SaveF(const std::list<Cball>& clist, int g, int gg, size_t n, int nogene);
+void SaveF(const std::list<Cball>& clist, int g, int gg, size_t n);
 void SaveE(int g, int gg);
 void SaveA(const std::list<Cball>& clist, int g, int gg, size_t n, int clas);
 void AssignBucket(std::list<Cball>* list1);

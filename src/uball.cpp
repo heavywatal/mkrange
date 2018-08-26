@@ -4,19 +4,9 @@
 #include <sstream>
 #include <iostream>
 #include "uball.h"
+#include "global.hpp"
 #include "read_array.hpp"
 #include "random.hpp"
-
-extern int xrange;
-extern int minxrange;
-extern int yrange;
-extern int xmi;
-extern int xma;
-extern double Vp;
-extern int nloci;
-extern int nopoly;
-extern double allele_effect;
-extern std::mt19937 engine;
 
 std::vector<std::list<Cball>::iterator> gridindiv[162][7];
 
@@ -41,7 +31,7 @@ Matrix transpose(const Matrix& A) {
 // calculate resouce use phenotypes from the genotype
 void Cball::set_resource() {
     resource_ = 0.0;
-    for (int i = 11; i <= 10 + nloci; ++i) {
+    for (unsigned i = nloci_neutral + 1; i <= nloci_neutral + nloci; ++i) {
         resource_ += allele_effect * (gene1[i] + gene2[i]);
     }
     std::normal_distribution<double> normal(0.0, std::sqrt(Vp));
@@ -57,12 +47,12 @@ double Cball::distance(const Cball& other) const {
 
 std::vector<short> Cball::make_gamete(const double mr, const double nmr) const {
     std::vector<short> gamete = gene1;
-    for (size_t i=0; i<gamete.size(); ++i) {
+    for (size_t i=1; i<gamete.size(); ++i) {
         if (wtl::randombit(engine)) {
             gamete[i] = gene2[i];
         }
         ///////// mutation ////////
-        const double mrr = (i > (10 + 1)) ? mr : nmr;
+        const double mrr = (i > nloci_neutral) ? mr : nmr;
         if (wtl::bernoulli(mrr, engine)) {
             gamete[i] = (gamete[i] == 1) ? 0 : 1;
         }
@@ -157,7 +147,7 @@ void Cball::measurefitness(double RR, double gradient, double Vs, double K, doub
 
 Cball::Cball(const std::vector<int>& row)
 : xp(row[0]), yp(row[1]), sexi(row[2]),
-  gene1(row.size() - 3 + 10 + 1), gene2(gene1.size()),
+  gene1(row.size() - 3 + nloci_neutral + 1), gene2(gene1.size()),
   nomating(0), dfitness(0.0), nooffspring(0), resource_(0.0) {
     for (size_t col = 3; col < row.size(); ++col) {
         const int col_8 = static_cast<int>(col) + 8;
@@ -174,7 +164,7 @@ Cball::Cball(const std::vector<int>& row)
         }
     }
     //////////// set genes for resource use ///////
-    for (int i = 1; i <= 10; ++i) {
+    for (unsigned i = 1; i <= nloci_neutral; ++i) {
         gene1[i] = wtl::randombit(engine);
         gene2[i] = wtl::randombit(engine);
     }
@@ -197,10 +187,10 @@ inline std::vector<std::vector<short>> make_haplotypes(int popsize, int freq) {
         bits[i] = 1;
     }
     std::vector<std::vector<short>> sites;
-    sites.reserve(1 + 10 + nloci);
+    sites.reserve(1 + nloci_neutral + nloci);
     sites.push_back(std::vector<short>(popsize, 0));
     ////// set genes for resource use ///////
-    for (int i = 0; i < 10; ++i) {
+    for (unsigned i = 0; i < nloci_neutral; ++i) {
         std::shuffle(bits.begin(), bits.end(), engine);
         sites.push_back(bits);
     }
@@ -265,7 +255,7 @@ size_t Cball::matingcount(int matingsize) const {
 }
 
 // save the results as afile
-void SaveF(const std::list<Cball>& clist, int g, int gg, size_t n, int nogene) {
+void SaveF(const std::list<Cball>& clist, int g, int gg, size_t n) {
     std::ostringstream oss;
     oss << "File" << gg << "-" << g;
     FILE* fp = fopen(oss.str().c_str(), "w");
@@ -275,7 +265,7 @@ void SaveF(const std::list<Cball>& clist, int g, int gg, size_t n, int nogene) {
         const double m2 = it->resource();
         const double m3 = (m1 == 0) ? it->nooffspring : it->dfitness;
         fprintf(fp, "%d\t %d\t %d\t %f\t  %7.3f\t", it->xp, it->yp, m1, m2, m3);
-        for (long ge = 1; ge <= nogene; ++ge) {
+        for (long ge = 1; ge <= nloci_neutral + nloci; ++ge) {
             fprintf(fp, "%d\t ", it->gene1[ge]+ it->gene2[ge]);
         }
         fprintf(fp, "\n");

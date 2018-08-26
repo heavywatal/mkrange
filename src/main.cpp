@@ -1,14 +1,11 @@
-#include <cstdlib>
-#include <cstdio>
-#include <cstring>
-#include <cmath>
-#include <ctime>
 #include <iostream>
 #include <fstream>
 #include <list>
 #include "uball.h"
+#include "global.hpp"
 #include "random.hpp"
 
+const unsigned nloci_neutral = 10;
 int xrange;
 int minxrange;
 int yrange;
@@ -83,7 +80,6 @@ int main(int argc, char* argv[]) {
     }
     const int nomale = static_cast<int>(no / 2); // initial number of males
     const double fdispersal = mdispersal;
-    const int nogene = nloci + 10;
     std::random_device seeder;
     engine.seed(seeder());
     for (int prep = 1; prep <= 1; ++prep) {
@@ -143,7 +139,7 @@ int main(int argc, char* argv[]) {
                         }
                     }
                     if (y % genS == 0 || y == 1) {
-                        SaveF(alist, y, gggg, num_parents, nogene);
+                        SaveF(alist, y, gggg, num_parents);
                         SaveA(alist, y, gggg, num_parents, noclas);
                     }
                     std::list<Cball>::iterator it = alist.begin();
@@ -167,5 +163,6 @@ int main(int argc, char* argv[]) {
               << ";K=" << CC
               << ";r="<< reprate
               << ";mr=" << mutationr
-              << ";ng=" << nogene ;
+              << ";ng=" << nloci_neutral + nloci
+              << "\n";
 }
