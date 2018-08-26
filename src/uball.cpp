@@ -187,51 +187,44 @@ void Newball(const char* infile, std::list<Cball>* list1) {
     }
 }
 
-void Newball2008(int n, int male, std::list<Cball>* list1, double fr) {
-    const int aa = std::round(fr * fr * n);
-    const int ab = std::round(fr * (1 - fr) * 2 * n);
-    std::vector<short> ge1(n);
-    std::vector<short> ge2(n);
-    for (int i = 0; i < n; ++i) {
-        ge1[i] = (i < aa + ab);
-        ge2[i] = (i < aa);
+inline std::vector<std::vector<short>> make_haplotypes(int popsize, int freq) {
+    std::vector<short> bits(popsize, 0);
+    for (int i = 0; i < freq; ++i) {
+        bits[i] = 1;
     }
-    std::vector<std::vector<short>> matrix1;
-    std::vector<std::vector<short>> matrix2;
-    matrix1.reserve(nloci + 10 + 1);
-    matrix2.reserve(nloci + 10 + 1);
-    matrix1.push_back(std::vector<short>(n, 0));
-    matrix2.push_back(std::vector<short>(n, 0));
+    std::vector<std::vector<short>> sites;
+    sites.reserve(nloci + 10 + 1);
+    sites.push_back(std::vector<short>(popsize, 0));
     ////// set genes for resource use ///////
     for (int j = 1; j <= 10; ++j) {
-        std::shuffle(ge1.begin(), ge1.end(), engine);
-        std::shuffle(ge2.begin(), ge2.end(), engine);
-        matrix1.push_back(ge1);
-        matrix2.push_back(ge2);
+        std::shuffle(bits.begin(), bits.end(), engine);
+        sites.push_back(bits);
     }
     for (int j = 11; j <= 10 + (nloci - nopoly) / 2; ++j) {
-        matrix1.push_back(std::vector<short>(n, 1));
-        matrix2.push_back(std::vector<short>(n, 1));
+        sites.push_back(std::vector<short>(popsize, 1));
     }
     // genes 1 and 0 at 3 loci are randomly allocated for all the individuals
     for (int j = 11 + (nloci - nopoly) / 2; j <= 10 + (nloci - nopoly) / 2 + nopoly; ++j) {
-        std::shuffle(ge1.begin(), ge1.end(), engine);
-        std::shuffle(ge2.begin(), ge2.end(), engine);
-        matrix1.push_back(ge1);
-        matrix2.push_back(ge2);
+        std::shuffle(bits.begin(), bits.end(), engine);
+        sites.push_back(bits);
     }
     for (int j = 11 + (nloci - nopoly) / 2 + nopoly; j <= 10 + nloci; ++j) {
-        matrix1.push_back(std::vector<short>(n, 0));
-        matrix2.push_back(std::vector<short>(n, 0));
+        sites.push_back(std::vector<short>(popsize, 0));
     }
-    matrix1 = transpose(matrix1);
-    matrix2 = transpose(matrix2);
+    return transpose(sites);
+}
+
+void Newball2008(int n, int male, std::list<Cball>* list1, double fr) {
+    const int aa = std::round(fr * fr * n);
+    const int ab = std::round(fr * (1 - fr) * 2 * n);
+    const std::vector<std::vector<short>> haplotypes1 = make_haplotypes(n, aa + ab);
+    const std::vector<std::vector<short>> haplotypes2 = make_haplotypes(n, aa);
     std::uniform_int_distribution<int> uniform_x(1, 500);
     std::uniform_int_distribution<int> uniform_y(1, yrange);
     for (int i = 0; i < n; ++i) {
         const int xx = uniform_x(engine) + xrange / 2 - 250;
         const int yy = uniform_y(engine);
-        list1->push_back(Cball(xx, yy, i < male, matrix1[i], matrix2[i]));
+        list1->push_back(Cball(xx, yy, i < male, haplotypes1[i], haplotypes2[i]));
     }
 }
 
