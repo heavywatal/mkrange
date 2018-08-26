@@ -193,22 +193,25 @@ inline std::vector<std::vector<short>> make_haplotypes(int popsize, int freq) {
         bits[i] = 1;
     }
     std::vector<std::vector<short>> sites;
-    sites.reserve(nloci + 10 + 1);
+    sites.reserve(1 + 10 + nloci);
     sites.push_back(std::vector<short>(popsize, 0));
     ////// set genes for resource use ///////
-    for (int j = 1; j <= 10; ++j) {
+    for (int i = 0; i < 10; ++i) {
         std::shuffle(bits.begin(), bits.end(), engine);
         sites.push_back(bits);
     }
-    for (int j = 11; j <= 10 + (nloci - nopoly) / 2; ++j) {
+    const int num_monomorphic = nloci - nopoly;
+    const int num_1_fixed = num_monomorphic / 2;
+    const int num_0_fixed = num_monomorphic - num_1_fixed;
+    for (int i = 0; i < num_1_fixed; ++i) {
         sites.push_back(std::vector<short>(popsize, 1));
     }
     // genes 1 and 0 at 3 loci are randomly allocated for all the individuals
-    for (int j = 11 + (nloci - nopoly) / 2; j <= 10 + (nloci - nopoly) / 2 + nopoly; ++j) {
+    for (int i = 0; i < nopoly; ++i) {
         std::shuffle(bits.begin(), bits.end(), engine);
         sites.push_back(bits);
     }
-    for (int j = 11 + (nloci - nopoly) / 2 + nopoly; j <= 10 + nloci; ++j) {
+    for (int i = 0; i < num_0_fixed; ++i) {
         sites.push_back(std::vector<short>(popsize, 0));
     }
     return transpose(sites);
