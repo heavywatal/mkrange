@@ -1,9 +1,10 @@
 #include <iostream>
 #include <fstream>
+#include <string>
 #include <list>
+#include <random>
 #include "uball.h"
 #include "global.hpp"
-#include "random.hpp"
 
 const unsigned nloci_neutral = 10;
 int xrange;
