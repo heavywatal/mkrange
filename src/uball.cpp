@@ -31,7 +31,7 @@ Matrix transpose(const Matrix& A) {
 // calculate resouce use phenotypes from the genotype
 void Cball::set_resource() {
     resource_ = 0.0;
-    for (unsigned i = nloci_neutral + 1; i <= nloci_neutral + nloci; ++i) {
+    for (unsigned i = nloci_neutral; i < nloci_neutral + nloci; ++i) {
         resource_ += allele_effect * (gene1[i] + gene2[i]);
     }
     std::normal_distribution<double> normal(0.0, std::sqrt(Vp));
@@ -47,12 +47,12 @@ double Cball::distance(const Cball& other) const {
 
 std::vector<short> Cball::make_gamete(const double mr, const double nmr) const {
     std::vector<short> gamete = gene1;
-    for (unsigned i=1; i<gamete.size(); ++i) {
+    for (unsigned i=0; i<gamete.size(); ++i) {
         if (wtl::randombit(engine)) {
             gamete[i] = gene2[i];
         }
         ///////// mutation ////////
-        const double mrr = (i > nloci_neutral) ? mr : nmr;
+        const double mrr = (i < nloci_neutral) ? nmr : mr;
         if (wtl::bernoulli(mrr, engine)) {
             gamete[i] = (gamete[i] == 1) ? 0 : 1;
         }
@@ -89,23 +89,23 @@ void Cball::measurefitness(double RR, double gradient, double Vs, double K, doub
 //Vs fitness function variance, K carring capacity,
     const int xg = static_cast<int>(ceil(xp / 200.0));
     const int yg = static_cast<int>(ceil(yp / 200.0));
-    int jj[4];
+    std::vector<int> jj(3);
     if (yg - 1 < 1) {
-        jj[1] = 1;
-        jj[2] = 2;
-        jj[3] = 5;
-    } else if (yg + 1 > yrange / 200) {
-        jj[1] = 4;
+        jj[0] = 1;
+        jj[1] = 2;
         jj[2] = 5;
-        jj[3] = 1;
+    } else if (yg + 1 > yrange / 200) {
+        jj[0] = 4;
+        jj[1] = 5;
+        jj[2] = 1;
     } else {
-        jj[1] = yg - 1;
-        jj[2] = yg;
-        jj[3] = yg + 1;
+        jj[0] = yg - 1;
+        jj[1] = yg;
+        jj[2] = yg + 1;
     }
     unsigned tot = 0;
     for (int i = std::max(xg - 1, 1); i <= std::min(xg + 1, xrange / 200); ++i) {
-        for (int j = 1; j <= 3; ++j) {
+        for (unsigned j = 0; j < 3; ++j) {
             const std::vector<std::list<Cball>::iterator> grid_ij = gridindiv[i][jj[j]];
             for (unsigned k = 0; k < grid_ij.size(); ++k) {
                 const double dist = distance(*grid_ij[k]);
@@ -117,7 +117,6 @@ void Cball::measurefitness(double RR, double gradient, double Vs, double K, doub
                 if (sexi == 0 && dist <= MS && grid_ij[k]->sexi == 1) {
                     // if this individul is female and called individual is male and if the distance between them is less than 200, then the called individual is recored as candidate males.
                     candidatemate.push_back(grid_ij[k]);
-                    //NOTE: should be refreshed every generation?
                 }
             }
         }
@@ -147,26 +146,26 @@ void Cball::measurefitness(double RR, double gradient, double Vs, double K, doub
 
 Cball::Cball(const std::vector<int>& row)
 : xp(row[0]), yp(row[1]), sexi(row[2]),
-  gene1(row.size() - 3 + nloci_neutral + 1), gene2(gene1.size()),
+  gene1(row.size() - 3 + nloci_neutral), gene2(gene1.size()),
   nomating(0), dfitness(0.0), nooffspring(0), resource_(0.0) {
-    for (unsigned col = 3; col < row.size(); ++col) {
-        const unsigned col_8 = col + 8;
+    //////////// set genes for resource use ///////
+    unsigned i = 0;
+    for (; i < nloci_neutral; ++i) {
+        gene1[i] = wtl::randombit(engine);
+        gene2[i] = wtl::randombit(engine);
+    }
+    for (unsigned col = 3; col < row.size(); ++col, ++i) {
         if (row[col] == 2) {
-            gene1[col_8] = 1;
-            gene2[col_8] = 1;
+            gene1[i] = 1;
+            gene2[i] = 1;
         }
         else if (row[col] == 1) {
             if (wtl::randombit(engine)) {
-                gene1[col_8] = 1;
+                gene1[i] = 1;
             } else {
-                gene2[col_8] = 1;
+                gene2[i] = 1;
             }
         }
-    }
-    //////////// set genes for resource use ///////
-    for (unsigned i = 1; i <= nloci_neutral; ++i) {
-        gene1[i] = wtl::randombit(engine);
-        gene2[i] = wtl::randombit(engine);
     }
     set_resource();
 }
@@ -187,8 +186,7 @@ inline std::vector<std::vector<short>> make_haplotypes(unsigned popsize, unsigne
         bits[i] = 1;
     }
     std::vector<std::vector<short>> sites;
-    sites.reserve(1 + nloci_neutral + nloci);
-    sites.push_back(std::vector<short>(popsize, 0));
+    sites.reserve(nloci_neutral + nloci);
     ////// set genes for resource use ///////
     for (unsigned i = 0; i < nloci_neutral; ++i) {
         std::shuffle(bits.begin(), bits.end(), engine);
@@ -265,7 +263,7 @@ void SaveF(const std::list<Cball>& clist, unsigned g, unsigned gg, unsigned n) {
         const double m2 = it->resource();
         const double m3 = (m1 == 0) ? it->nooffspring : it->dfitness;
         fprintf(fp, "%d\t %d\t %d\t %f\t  %7.3f\t", it->xp, it->yp, m1, m2, m3);
-        for (unsigned ge = 1; ge <= nloci_neutral + nloci; ++ge) {
+        for (unsigned ge = 0; ge < nloci_neutral + nloci; ++ge) {
             fprintf(fp, "%d\t ", it->gene1[ge]+ it->gene2[ge]);
         }
         fprintf(fp, "\n");
