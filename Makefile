@@ -1,5 +1,5 @@
 CXX = clang++
-CXXFLAGS = -std=c++11 -Wall -Wextra -Wpedantic -Wconversion -Wshadow -Wfloat-equal -O2 -march=native -g
+CXXFLAGS = -std=c++11 -Wall -Wextra -Wpedantic -Wconversion -Wno-sign-conversion -Wshadow -Wfloat-equal -O2 -march=native -g
 
 all: a.out
 	@:

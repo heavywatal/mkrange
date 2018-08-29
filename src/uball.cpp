@@ -8,7 +8,8 @@
 #include "read_array.hpp"
 #include "random.hpp"
 
-std::vector<std::list<Cball>::iterator> gridindiv[162][7];
+constexpr int grid_size = 200;
+std::vector<std::vector<std::vector<std::list<Cball>::const_iterator>>> gridindiv;
 
 Cball::Cball(const std::vector<int>& row)
 : xp(row[0]), yp(row[1]), sexi(row[2]),
@@ -98,26 +99,19 @@ void Cball::nreproduction(const Cball& male, std::list<Cball>* ablist, double md
 // calculate fitness
 void Cball::measurefitness(double RR, double gradient, double Vs, double K, double Range, double MS) {
 //Vs fitness function variance, K carring capacity,
-    const int xg = static_cast<int>(ceil(xp / 200.0));
-    const int yg = static_cast<int>(ceil(yp / 200.0));
-    std::vector<int> jj(3);
-    if (yg - 1 < 1) {
-        jj[0] = 1;
-        jj[1] = 2;
-        jj[2] = 5;
-    } else if (yg + 1 > yrange / 200) {
-        jj[0] = 4;
-        jj[1] = 5;
-        jj[2] = 1;
-    } else {
-        jj[0] = yg - 1;
-        jj[1] = yg;
-        jj[2] = yg + 1;
-    }
+    const int max_yg = (yrange - 1) / grid_size;
+    const int xg = (xp - 1) / grid_size;
+    const int yg = (yp - 1) / grid_size;
+    const std::vector<int> jj = {
+      yg == 0 ? max_yg : yg - 1,
+      yg,
+      yg == max_yg ? 0 : yg + 1
+    };
     unsigned tot = 0;
-    for (int i = std::max(xg - 1, 1); i <= std::min(xg + 1, xrange / 200); ++i) {
+    const int max_xg = std::min(xg + 1, xrange / grid_size - 1);
+    for (int i = std::max(xg - 1, 0); i <= max_xg; ++i) {
         for (unsigned j = 0; j < 3; ++j) {
-            const std::vector<std::list<Cball>::iterator> grid_ij = gridindiv[i][jj[j]];
+            const std::vector<std::list<Cball>::const_iterator>& grid_ij = gridindiv[i][jj[j]];
             for (unsigned k = 0; k < grid_ij.size(); ++k) {
                 const double dist = distance(*grid_ij[k]);
                 if (dist <= Range) {
@@ -239,10 +233,10 @@ void Newball(unsigned n, double fr, std::list<Cball>* list1) {
     const unsigned ab = static_cast<unsigned>(std::round(fr * (1 - fr) * 2 * n));
     const std::vector<std::vector<short>> haplotypes1 = make_haplotypes(n, aa + ab);
     const std::vector<std::vector<short>> haplotypes2 = make_haplotypes(n, aa);
-    std::uniform_int_distribution<int> uniform_x(1, 500);
-    std::uniform_int_distribution<int> uniform_y(1, yrange);
+    std::uniform_int_distribution<int> uniform_x(xrange / 2 - 250, xrange / 2 + 250);
+    std::uniform_int_distribution<int> uniform_y(0, yrange - 1);
     for (unsigned i = 0; i < n; ++i) {
-        const int xx = uniform_x(engine) + xrange / 2 - 250;
+        const int xx = uniform_x(engine);
         const int yy = uniform_y(engine);
         list1->push_back(Cball(xx, yy, i < num_males, haplotypes1[i], haplotypes2[i]));
     }
@@ -258,18 +252,15 @@ void Newball(const char* infile, std::list<Cball>* list1) {
     }
 }
 
-void AssignBucket(std::list<Cball>* list1) {
-    const int nogx = xrange / 200;//the max number of x dimention of the bucket girds y = 3200 x = 160
-    const int nogy = yrange / 200;//the max number of y dimention of the bucket girds y = 1000 y = 5
-    for (int xc = 0; xc <= nogx; ++xc) {
-        for (int yc = 0; yc <= nogy; ++yc) {
-            //Initialize the array of the number of individuals in a bucket grid xc yc
-            gridindiv[xc][yc].clear();
-        }
-    }
-    for (std::list<Cball>::iterator it = list1->begin(); it != list1->end(); ++it) {
-        const int xc = static_cast<int>(ceil(it->xp / 200.));
-        const int yc = static_cast<int>(ceil(it->yp / 200.));
+void AssignBucket(const std::list<Cball>& list1) {
+    const int nogx = xrange / grid_size;//the max number of x dimention of the bucket girds y = 3200 x = 160
+    const int nogy = yrange / grid_size;//the max number of y dimention of the bucket girds y = 1000 y = 5
+    gridindiv.assign(nogx,
+      std::vector<std::vector<std::list<Cball>::const_iterator>>(nogy)
+    );
+    for (std::list<Cball>::const_iterator it = list1.begin(); it != list1.end(); ++it) {
+        const int xc = (it->xp - 1) / grid_size;
+        const int yc = (it->yp - 1) / grid_size;
         gridindiv[xc][yc].push_back(it);//store the individuals into the array
     }
 }

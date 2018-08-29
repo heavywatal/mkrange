@@ -24,7 +24,7 @@ class Cball {
     std::vector<short> gene1, gene2;
     double dfitness;
     unsigned nooffspring;
-    std::vector<std::list<Cball>::iterator> candidatemate;
+    std::vector<std::list<Cball>::const_iterator> candidatemate;
 
   private:
     double calc_resource() const;
@@ -37,7 +37,7 @@ class Cball {
 
 void Newball(unsigned n, double fr, std::list<Cball>* list1);
 void Newball(const char* infile, std::list<Cball>* list1);
-void AssignBucket(std::list<Cball>* list1);
+void AssignBucket(const std::list<Cball>& list1);
 //Individuals is stored in each bucket according to the position.
 void SaveF(const std::list<Cball>& clist, unsigned g, unsigned gg, unsigned n);
 void SaveA(const std::list<Cball>& clist, unsigned g, unsigned gg, unsigned n, unsigned clas);

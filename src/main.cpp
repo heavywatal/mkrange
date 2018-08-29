@@ -99,7 +99,6 @@ int main(int argc, char* argv[]) {
             int minx = 0;
             int maxx = 0;
             for (unsigned y = 1; y <= nogeneration; ++y) {// Generation
-                AssignBucket(&alist);
                 const size_t itemP = alist.size();// check number of individuals
                 if (itemP == 0) {
                     SaveE(prep, gggg);
@@ -112,6 +111,7 @@ int main(int argc, char* argv[]) {
                     std::cout << "Gener = " << y << ":Repeat = " << gggg << "\tNo= " << itemP <<"\tMin(x)= " << minx << "\tMax(x)= " << maxx << std::endl;
                     // print no of generations and no of individuals
                 }
+                AssignBucket(alist);
                 if (itemP > 0) {// itemP= number of individuals
                     // Measure fitness for each individual
                     for (std::list<Cball>::iterator it = alist.begin(); it != alist.end(); ++it) {
