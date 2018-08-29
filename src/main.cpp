@@ -102,50 +102,42 @@ int main(int argc, char* argv[]) {
                 const size_t itemP = alist.size();// check number of individuals
                 if (itemP == 0) {
                     SaveE(prep, gggg);
-                    y = nogeneration;
+                    break;
                 }
-                if (y == 1) {
-                    std::cout << "Gener = " << y << ":Repeat = " << gggg << "\tNo= " << itemP << std::endl;
-                }
-                if (y % 2 == 0) {
+                if (y == 1 || y % 2 == 0) {
                     std::cout << "Gener = " << y << ":Repeat = " << gggg << "\tNo= " << itemP <<"\tMin(x)= " << minx << "\tMax(x)= " << maxx << std::endl;
                     // print no of generations and no of individuals
                 }
                 AssignBucket(alist);
-                if (itemP > 0) {// itemP= number of individuals
-                    // Measure fitness for each individual
-                    for (std::list<Cball>::iterator it = alist.begin(); it != alist.end(); ++it) {
-                        it->measurefitness(reprate, G, VS, CC, homeranges, sizemating);
-                    }
-                    // reproduced by females /////
-                    maxx = 0;
-                    minx = 40000;
-                    const unsigned num_parents = static_cast<unsigned>(alist.size());
-                    for (std::list<Cball>::iterator it = alist.begin(); it != alist.end(); ++it) {
-                        if (it->xp > maxx) maxx = it->xp;
-                        if (it->xp < minx) minx = it->xp;
-                        if (it->sexi == 0 && it->nooffspring > 0) {
-                            // choose female having nonzero fitness
-                            // Search candidate mates :
-                            // female search candidate mates
-                            const unsigned nofm = it->matingcount(sizemating);
-                            if (nofm < it->candidatemate.size()) {
-                                // if candidate males were not zero
-                                const Cball& male = *it->candidatemate[nofm];
-                                // give birth to young
-                                // mp is a chosen male
-                                it->nreproduction(male, &alist, mdispersal, fdispersal, mutationr, nem);
-                            }
+                // Measure fitness for each individual
+                for (std::list<Cball>::iterator it = alist.begin(); it != alist.end(); ++it) {
+                    it->measurefitness(reprate, G, VS, CC, homeranges, sizemating);
+                }
+                // reproduced by females /////
+                maxx = 0;
+                minx = xrange;
+                const unsigned num_parents = static_cast<unsigned>(alist.size());
+                for (std::list<Cball>::iterator it = alist.begin(); it != alist.end(); ++it) {
+                    if (it->xp > maxx) maxx = it->xp;
+                    if (it->xp < minx) minx = it->xp;
+                    if (it->sexi == 0 && it->nooffspring > 0) {
+                        // choose female having nonzero fitness
+                        // female search candidate mates
+                        const unsigned nofm = it->matingcount(sizemating);
+                        if (nofm < it->candidatemate.size()) {
+                            const Cball& male = *it->candidatemate[nofm];
+                            // give birth to young
+                            it->nreproduction(male, &alist, mdispersal, fdispersal, mutationr, nem);
                         }
                     }
-                    if (y % genS == 0 || y == 1) {
-                        SaveF(alist, y, gggg, num_parents);
-                        SaveA(alist, y, gggg, num_parents, noclas);
-                    }
-                    std::list<Cball>::iterator it = alist.begin();
-                    for (unsigned i = 0; i < num_parents; ++i) {
-                        it = alist.erase(it);// clear parents
-                    }
+                }
+                if (y % genS == 0 || y == 1) {
+                    SaveF(alist, y, gggg, num_parents);
+                    SaveA(alist, y, gggg, num_parents, noclas);
+                }
+                std::list<Cball>::iterator it = alist.begin();
+                for (unsigned i = 0; i < num_parents; ++i) {
+                    it = alist.erase(it);// clear parents
                 }
             }// y no generation
         }
