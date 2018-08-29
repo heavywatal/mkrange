@@ -10,32 +10,40 @@
 
 std::vector<std::list<Cball>::iterator> gridindiv[162][7];
 
-namespace {
-
-template <class Matrix> inline
-Matrix transpose(const Matrix& A) {
-    const size_t nrow = A.size();
-    if (nrow == 0u) return A;
-    const size_t ncol = A[0u].size();
-    Matrix out(ncol, typename Matrix::value_type(nrow));
-    for (unsigned row=0; row < nrow; ++row) {
-        for (unsigned col=0; col < ncol; ++col) {
-            out[col][row] = A[row][col];
+Cball::Cball(const std::vector<int>& row)
+: xp(row[0]), yp(row[1]), sexi(row[2]),
+  gene1(nloci_neutral + row.size() - 3), gene2(gene1.size()),
+  dfitness(0.0), nooffspring(0), nomating(0), resource_(0.0) {
+    //////////// set genes for resource use ///////
+    unsigned i = 0;
+    for (; i < nloci_neutral; ++i) {
+        gene1[i] = wtl::randombit(engine);
+        gene2[i] = wtl::randombit(engine);
+    }
+    for (unsigned col = 3; col < row.size(); ++col, ++i) {
+        if (row[col] == 2) {
+            gene1[i] = 1;
+            gene2[i] = 1;
+        }
+        else if (row[col] == 1) {
+            if (wtl::randombit(engine)) {
+                gene1[i] = 1;
+            } else {
+                gene2[i] = 1;
+            }
         }
     }
-    return out;
-}
-
+    resource_ = calc_resource();
 }
 
 // calculate resouce use phenotypes from the genotype
-void Cball::set_resource() {
-    resource_ = 0.0;
+double Cball::calc_resource() const {
+    double x = 0.0;
     for (unsigned i = nloci_neutral; i < nloci_neutral + nloci; ++i) {
-        resource_ += allele_effect * (gene1[i] + gene2[i]);
+        x += allele_effect * (gene1[i] + gene2[i]);
     }
     std::normal_distribution<double> normal(0.0, std::sqrt(Vp));
-    resource_ += normal(engine);
+    return x += normal(engine);
 }
 
 double Cball::distance(const Cball& other) const {
@@ -144,40 +152,50 @@ void Cball::measurefitness(double RR, double gradient, double Vs, double K, doub
     nooffspring = poisson(engine);
 }
 
-Cball::Cball(const std::vector<int>& row)
-: xp(row[0]), yp(row[1]), sexi(row[2]),
-  gene1(row.size() - 3 + nloci_neutral), gene2(gene1.size()),
-  nomating(0), dfitness(0.0), nooffspring(0), resource_(0.0) {
-    //////////// set genes for resource use ///////
-    unsigned i = 0;
-    for (; i < nloci_neutral; ++i) {
-        gene1[i] = wtl::randombit(engine);
-        gene2[i] = wtl::randombit(engine);
-    }
-    for (unsigned col = 3; col < row.size(); ++col, ++i) {
-        if (row[col] == 2) {
-            gene1[i] = 1;
-            gene2[i] = 1;
-        }
-        else if (row[col] == 1) {
-            if (wtl::randombit(engine)) {
-                gene1[i] = 1;
-            } else {
-                gene2[i] = 1;
+///// serach for candidate mates
+unsigned Cball::matingcount(int matingsize) const {
+    double total_fitness = 0.0;
+    std::vector<unsigned> indices;
+    indices.reserve(candidatemate.size());
+    for (unsigned i = 0; i < candidatemate.size(); ++i) {
+        if (candidatemate[i]->nooffspring > 0) {
+            const double dist = distance(*candidatemate[i]);
+            if (dist <= matingsize) {
+                /// count and save candidate male
+                total_fitness += candidatemate[i]->dfitness;
+                indices.push_back(i);
             }
         }
     }
-    set_resource();
+    if (total_fitness > 0.0) {
+        double sum = 0.0;
+        unsigned i = 0;
+        std::uniform_real_distribution<double> uniform(0.0, total_fitness);
+        const double r = uniform(engine);
+        do {
+            sum += candidatemate[indices[i]]->dfitness;
+            ++i;
+        } while (sum < r);
+        return indices[--i];
+    }
+    return static_cast<unsigned>(candidatemate.size());
 }
 
-// Create new indiviaul
-void Newball(const char* infile, std::list<Cball>* list1) {
-    //// creat n individuals and initialize position and sex
-    const std::vector<std::vector<int> > matrix = read_int_array(infile);
-    nloci = static_cast<unsigned>(matrix[0].size()) - 3;
-    for (unsigned row = 0; row < matrix.size(); ++row) {
-        list1->push_back(Cball(matrix[row]));
+/////////1/////////2/////////3/////////4/////////5/////////6/////////7/////////
+namespace {
+
+template <class Matrix> inline
+Matrix transpose(const Matrix& A) {
+    const size_t nrow = A.size();
+    if (nrow == 0u) return A;
+    const size_t ncol = A[0u].size();
+    Matrix out(ncol, typename Matrix::value_type(nrow));
+    for (unsigned row=0; row < nrow; ++row) {
+        for (unsigned col=0; col < ncol; ++col) {
+            out[col][row] = A[row][col];
+        }
     }
+    return out;
 }
 
 inline std::vector<std::vector<short>> make_haplotypes(unsigned popsize, unsigned freq) {
@@ -209,7 +227,11 @@ inline std::vector<std::vector<short>> make_haplotypes(unsigned popsize, unsigne
     return transpose(sites);
 }
 
-void Newball2008(unsigned n, unsigned male, std::list<Cball>* list1, double fr) {
+}
+/////////1/////////2/////////3/////////4/////////5/////////6/////////7/////////
+
+void Newball(unsigned n, double fr, std::list<Cball>* list1) {
+    const unsigned num_males = n / 2;
     const unsigned aa = static_cast<unsigned>(std::round(fr * fr * n));
     const unsigned ab = static_cast<unsigned>(std::round(fr * (1 - fr) * 2 * n));
     const std::vector<std::vector<short>> haplotypes1 = make_haplotypes(n, aa + ab);
@@ -219,37 +241,34 @@ void Newball2008(unsigned n, unsigned male, std::list<Cball>* list1, double fr) 
     for (unsigned i = 0; i < n; ++i) {
         const int xx = uniform_x(engine) + xrange / 2 - 250;
         const int yy = uniform_y(engine);
-        list1->push_back(Cball(xx, yy, i < male, haplotypes1[i], haplotypes2[i]));
+        list1->push_back(Cball(xx, yy, i < num_males, haplotypes1[i], haplotypes2[i]));
     }
 }
 
-///// serach for candidate mates
-unsigned Cball::matingcount(int matingsize) const {
-    double total_fitness = 0.0;
-    std::vector<unsigned> indices;
-    indices.reserve(candidatemate.size());
-    for (unsigned i = 0; i < candidatemate.size(); ++i) {
-        if (candidatemate[i]->nooffspring > 0) {
-            const double dist = distance(*candidatemate[i]);
-            if (dist <= matingsize) {
-                /// count and save candidate male
-                total_fitness += candidatemate[i]->dfitness;
-                indices.push_back(i);
-            }
+// Create new indiviaul
+void Newball(const char* infile, std::list<Cball>* list1) {
+    //// creat n individuals and initialize position and sex
+    const std::vector<std::vector<int> > matrix = read_int_array(infile);
+    nloci = static_cast<unsigned>(matrix[0].size()) - 3;
+    for (unsigned row = 0; row < matrix.size(); ++row) {
+        list1->push_back(Cball(matrix[row]));
+    }
+}
+
+void AssignBucket(std::list<Cball>* list1) {
+    const int nogx = xrange / 200;//the max number of x dimention of the bucket girds y = 3200 x = 160
+    const int nogy = yrange / 200;//the max number of y dimention of the bucket girds y = 1000 y = 5
+    for (int xc = 0; xc <= nogx; ++xc) {
+        for (int yc = 0; yc <= nogy; ++yc) {
+            //Initialize the array of the number of individuals in a bucket grid xc yc
+            gridindiv[xc][yc].clear();
         }
     }
-    if (total_fitness > 0.0) {
-        double sum = 0.0;
-        unsigned i = 0;
-        std::uniform_real_distribution<double> uniform(0.0, total_fitness);
-        const double r = uniform(engine);
-        do {
-            sum += candidatemate[indices[i]]->dfitness;
-            ++i;
-        } while (sum < r);
-        return indices[--i];
+    for (std::list<Cball>::iterator it = list1->begin(); it != list1->end(); ++it) {
+        const int xc = static_cast<int>(ceil(it->xp / 200.));
+        const int yc = static_cast<int>(ceil(it->yp / 200.));
+        gridindiv[xc][yc].push_back(it);//store the individuals into the array
     }
-    return static_cast<unsigned>(candidatemate.size());
 }
 
 // save the results as afile
@@ -268,14 +287,6 @@ void SaveF(const std::list<Cball>& clist, unsigned g, unsigned gg, unsigned n) {
         }
         fprintf(fp, "\n");
     }
-    fclose(fp);
-}
-
-void SaveE(unsigned g, unsigned gg) {
-    std::ostringstream oss;
-    oss << "File" << gg << "-" << g;
-    FILE* fp = fopen(oss.str().c_str(), "w");
-    fprintf(fp, "%d", 0);
     fclose(fp);
 }
 
@@ -308,18 +319,10 @@ void SaveA(const std::list<Cball>& clist, unsigned g, unsigned gg, unsigned n, u
     fclose(fp);
 }
 
-void AssignBucket(std::list<Cball>* list1) {
-    const int nogx = xrange / 200;//the max number of x dimention of the bucket girds y = 3200 x = 160
-    const int nogy = yrange / 200;//the max number of y dimention of the bucket girds y = 1000 y = 5
-    for (int xc = 0; xc <= nogx; ++xc) {
-        for (int yc = 0; yc <= nogy; ++yc) {
-            //Initialize the array of the number of individuals in a bucket grid xc yc
-            gridindiv[xc][yc].clear();
-        }
-    }
-    for (std::list<Cball>::iterator it = list1->begin(); it != list1->end(); ++it) {
-        const int xc = static_cast<int>(ceil(it->xp / 200.));
-        const int yc = static_cast<int>(ceil(it->yp / 200.));
-        gridindiv[xc][yc].push_back(it);//store the individuals into the array
-    }
+void SaveE(unsigned g, unsigned gg) {
+    std::ostringstream oss;
+    oss << "File" << gg << "-" << g;
+    FILE* fp = fopen(oss.str().c_str(), "w");
+    fprintf(fp, "%d", 0);
+    fclose(fp);
 }

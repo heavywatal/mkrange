@@ -79,7 +79,6 @@ int main(int argc, char* argv[]) {
     } else if (gradient != "flat" && gradient != "steep") {
         throw std::runtime_error("invalid gradient choice: " + gradient);
     }
-    const unsigned nomale = no / 2; // initial number of males
     const double fdispersal = mdispersal;
     std::random_device seeder;
     engine.seed(seeder());
@@ -95,7 +94,7 @@ int main(int argc, char* argv[]) {
             if (argc > 2) {
                 Newball(argv[2], &alist);
             } else {
-                Newball2008(no, nomale, &alist, 0.5);
+                Newball(no, 0.5, &alist);
             }
             int minx = 0;
             int maxx = 0;
