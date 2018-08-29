@@ -18,8 +18,8 @@ Matrix transpose(const Matrix& A) {
     if (nrow == 0u) return A;
     const size_t ncol = A[0u].size();
     Matrix out(ncol, typename Matrix::value_type(nrow));
-    for (size_t row=0; row<nrow; ++row) {
-        for (size_t col=0; col<ncol; ++col) {
+    for (unsigned row=0; row < nrow; ++row) {
+        for (unsigned col=0; col < ncol; ++col) {
             out[col][row] = A[row][col];
         }
     }
@@ -47,7 +47,7 @@ double Cball::distance(const Cball& other) const {
 
 std::vector<short> Cball::make_gamete(const double mr, const double nmr) const {
     std::vector<short> gamete = gene1;
-    for (size_t i=1; i<gamete.size(); ++i) {
+    for (unsigned i=1; i<gamete.size(); ++i) {
         if (wtl::randombit(engine)) {
             gamete[i] = gene2[i];
         }
@@ -63,7 +63,7 @@ std::vector<short> Cball::make_gamete(const double mr, const double nmr) const {
 // reproduction
 void Cball::nreproduction(const Cball& male, std::list<Cball>* ablist, double mdis, double fdis, double mr, double nmr) {
     ++nomating;
-    for (int i = 0; i < nooffspring; ++i) {
+    for (unsigned i = 0; i < nooffspring; ++i) {
         const int gg = wtl::randombit(engine);// determin offspring sex
         const double sddispersal = (gg == 0) ? fdis : mdis;
         std::normal_distribution<double> normal(0.0, sddispersal);
@@ -103,11 +103,11 @@ void Cball::measurefitness(double RR, double gradient, double Vs, double K, doub
         jj[2] = yg;
         jj[3] = yg + 1;
     }
-    int tot = 0;
+    unsigned tot = 0;
     for (int i = std::max(xg - 1, 1); i <= std::min(xg + 1, xrange / 200); ++i) {
         for (int j = 1; j <= 3; ++j) {
             const std::vector<std::list<Cball>::iterator> grid_ij = gridindiv[i][jj[j]];
-            for (size_t k = 0; k < grid_ij.size(); ++k) {
+            for (unsigned k = 0; k < grid_ij.size(); ++k) {
                 const double dist = distance(*grid_ij[k]);
                 if (dist <= Range) {
                     //count number of individuals within the range
@@ -141,7 +141,7 @@ void Cball::measurefitness(double RR, double gradient, double Vs, double K, doub
     }
     dfitness = 2 + RR * (1 - tot / K) - (Sx - resource()) * (Sx - resource()) / (2 * Vs);
     if (dfitness < 0) dfitness = 0;
-    std::poisson_distribution<int> poisson(dfitness);
+    std::poisson_distribution<unsigned> poisson(dfitness);
     nooffspring = poisson(engine);
 }
 
@@ -149,8 +149,8 @@ Cball::Cball(const std::vector<int>& row)
 : xp(row[0]), yp(row[1]), sexi(row[2]),
   gene1(row.size() - 3 + nloci_neutral + 1), gene2(gene1.size()),
   nomating(0), dfitness(0.0), nooffspring(0), resource_(0.0) {
-    for (size_t col = 3; col < row.size(); ++col) {
-        const int col_8 = static_cast<int>(col) + 8;
+    for (unsigned col = 3; col < row.size(); ++col) {
+        const unsigned col_8 = col + 8;
         if (row[col] == 2) {
             gene1[col_8] = 1;
             gene2[col_8] = 1;
@@ -175,15 +175,15 @@ Cball::Cball(const std::vector<int>& row)
 void Newball(const char* infile, std::list<Cball>* list1) {
     //// creat n individuals and initialize position and sex
     const std::vector<std::vector<int> > matrix = read_int_array(infile);
-    nloci = static_cast<int>(matrix[0].size() - 3);
-    for (size_t row = 0; row < matrix.size(); ++row) {
+    nloci = static_cast<unsigned>(matrix[0].size()) - 3;
+    for (unsigned row = 0; row < matrix.size(); ++row) {
         list1->push_back(Cball(matrix[row]));
     }
 }
 
-inline std::vector<std::vector<short>> make_haplotypes(int popsize, int freq) {
+inline std::vector<std::vector<short>> make_haplotypes(unsigned popsize, unsigned freq) {
     std::vector<short> bits(popsize, 0);
-    for (int i = 0; i < freq; ++i) {
+    for (unsigned i = 0; i < freq; ++i) {
         bits[i] = 1;
     }
     std::vector<std::vector<short>> sites;
@@ -194,31 +194,31 @@ inline std::vector<std::vector<short>> make_haplotypes(int popsize, int freq) {
         std::shuffle(bits.begin(), bits.end(), engine);
         sites.push_back(bits);
     }
-    const int num_monomorphic = nloci - nopoly;
-    const int num_1_fixed = num_monomorphic / 2;
-    const int num_0_fixed = num_monomorphic - num_1_fixed;
-    for (int i = 0; i < num_1_fixed; ++i) {
+    const unsigned num_monomorphic = nloci - nopoly;
+    const unsigned num_1_fixed = num_monomorphic / 2;
+    const unsigned num_0_fixed = num_monomorphic - num_1_fixed;
+    for (unsigned i = 0; i < num_1_fixed; ++i) {
         sites.push_back(std::vector<short>(popsize, 1));
     }
     // genes 1 and 0 at 3 loci are randomly allocated for all the individuals
-    for (int i = 0; i < nopoly; ++i) {
+    for (unsigned i = 0; i < nopoly; ++i) {
         std::shuffle(bits.begin(), bits.end(), engine);
         sites.push_back(bits);
     }
-    for (int i = 0; i < num_0_fixed; ++i) {
+    for (unsigned i = 0; i < num_0_fixed; ++i) {
         sites.push_back(std::vector<short>(popsize, 0));
     }
     return transpose(sites);
 }
 
-void Newball2008(int n, int male, std::list<Cball>* list1, double fr) {
-    const int aa = static_cast<int>(std::round(fr * fr * n));
-    const int ab = static_cast<int>(std::round(fr * (1 - fr) * 2 * n));
+void Newball2008(unsigned n, unsigned male, std::list<Cball>* list1, double fr) {
+    const unsigned aa = static_cast<unsigned>(std::round(fr * fr * n));
+    const unsigned ab = static_cast<unsigned>(std::round(fr * (1 - fr) * 2 * n));
     const std::vector<std::vector<short>> haplotypes1 = make_haplotypes(n, aa + ab);
     const std::vector<std::vector<short>> haplotypes2 = make_haplotypes(n, aa);
     std::uniform_int_distribution<int> uniform_x(1, 500);
     std::uniform_int_distribution<int> uniform_y(1, yrange);
-    for (int i = 0; i < n; ++i) {
+    for (unsigned i = 0; i < n; ++i) {
         const int xx = uniform_x(engine) + xrange / 2 - 250;
         const int yy = uniform_y(engine);
         list1->push_back(Cball(xx, yy, i < male, haplotypes1[i], haplotypes2[i]));
@@ -226,11 +226,11 @@ void Newball2008(int n, int male, std::list<Cball>* list1, double fr) {
 }
 
 ///// serach for candidate mates
-size_t Cball::matingcount(int matingsize) const {
+unsigned Cball::matingcount(int matingsize) const {
     double total_fitness = 0.0;
-    std::vector<size_t> indices;
+    std::vector<unsigned> indices;
     indices.reserve(candidatemate.size());
-    for (size_t i = 0; i < candidatemate.size(); ++i) {
+    for (unsigned i = 0; i < candidatemate.size(); ++i) {
         if (candidatemate[i]->nooffspring > 0) {
             const double dist = distance(*candidatemate[i]);
             if (dist <= matingsize) {
@@ -251,21 +251,21 @@ size_t Cball::matingcount(int matingsize) const {
         } while (sum < r);
         return indices[--i];
     }
-    return candidatemate.size();
+    return static_cast<unsigned>(candidatemate.size());
 }
 
 // save the results as afile
-void SaveF(const std::list<Cball>& clist, int g, int gg, size_t n) {
+void SaveF(const std::list<Cball>& clist, unsigned g, unsigned gg, unsigned n) {
     std::ostringstream oss;
     oss << "File" << gg << "-" << g;
     FILE* fp = fopen(oss.str().c_str(), "w");
     std::list<Cball>::const_iterator it = clist.begin();
-    for (size_t i = 0; i < n; ++it, ++i) {
+    for (unsigned i = 0; i < n; ++it, ++i) {
         const int m1 = it->sexi;
         const double m2 = it->resource();
         const double m3 = (m1 == 0) ? it->nooffspring : it->dfitness;
         fprintf(fp, "%d\t %d\t %d\t %f\t  %7.3f\t", it->xp, it->yp, m1, m2, m3);
-        for (long ge = 1; ge <= nloci_neutral + nloci; ++ge) {
+        for (unsigned ge = 1; ge <= nloci_neutral + nloci; ++ge) {
             fprintf(fp, "%d\t ", it->gene1[ge]+ it->gene2[ge]);
         }
         fprintf(fp, "\n");
@@ -273,7 +273,7 @@ void SaveF(const std::list<Cball>& clist, int g, int gg, size_t n) {
     fclose(fp);
 }
 
-void SaveE(int g, int gg) {
+void SaveE(unsigned g, unsigned gg) {
     std::ostringstream oss;
     oss << "File" << gg << "-" << g;
     FILE* fp = fopen(oss.str().c_str(), "w");
@@ -281,16 +281,16 @@ void SaveE(int g, int gg) {
     fclose(fp);
 }
 
-void SaveA(const std::list<Cball>& clist, int g, int gg, size_t n, int clas) {
+void SaveA(const std::list<Cball>& clist, unsigned g, unsigned gg, unsigned n, unsigned clas) {
     std::ostringstream oss;
     oss << "Resl" << gg << "-" << g;
     FILE* fp = fopen(oss.str().c_str(), "w");
     std::vector<double> avfit(clas);
     std::vector<int> nof(clas);
     const double w = 32000.0 / clas;
-    for (int x = 0; x < clas; ++x) {
+    for (unsigned x = 0; x < clas; ++x) {
         std::list<Cball>::const_iterator it = clist.begin();
-        for (size_t i = 0; i < n; ++it, ++i) {
+        for (unsigned i = 0; i < n; ++it, ++i) {
             if(it->sexi == 0) {
                 if(w * x < it->xp && it->xp <= w * (x + 1)) {
                     avfit[x] += it->nooffspring;
@@ -299,7 +299,7 @@ void SaveA(const std::list<Cball>& clist, int g, int gg, size_t n, int clas) {
             }
         }
     }
-    for (int x = 0; x < clas; ++x) {
+    for (unsigned x = 0; x < clas; ++x) {
         const int m1 = static_cast<int>(w * x);
         const int m2 = static_cast<int>(w * (x + 1));
         const double m3 = static_cast<double>(nof[x]);

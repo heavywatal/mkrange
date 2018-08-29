@@ -13,8 +13,8 @@ int yrange;
 int xmi = 0;
 int xma = 0;
 double Vp;
-int nloci;
-int nopoly;
+unsigned nloci;
+unsigned nopoly;
 double allele_effect;
 std::mt19937_64 engine;
 
@@ -22,19 +22,19 @@ int main(int argc, char* argv[]) {
     if (argc < 2) throw std::runtime_error("too few arguments");
     const std::string gradient(argv[1]);
     int UNUSED;
-    int no;
+    unsigned no;
     int homeranges;
     int sizemating;
-    int genS;
+    unsigned genS;
     double G;
     double VS;
     double CC;
     double reprate;
     double mutationr;
     double nem;
-    int norepeat;
-    int nogeneration;
-    int noclas;
+    unsigned norepeat;
+    unsigned nogeneration;
+    unsigned noclas;
     double mdispersal;
     {
         std::string buffer;
@@ -79,17 +79,17 @@ int main(int argc, char* argv[]) {
     } else if (gradient != "flat" && gradient != "steep") {
         throw std::runtime_error("invalid gradient choice: " + gradient);
     }
-    const int nomale = static_cast<int>(no / 2); // initial number of males
+    const unsigned nomale = no / 2; // initial number of males
     const double fdispersal = mdispersal;
     std::random_device seeder;
     engine.seed(seeder());
-    for (int prep = 1; prep <= 1; ++prep) {
+    for (unsigned prep = 1; prep <= 1; ++prep) {
         std::cout << "no of loci x effect x 2 =" << nloci*allele_effect*2 << std::endl;
         std::cout << "gradient x xmax(=x range)=" << G*xrange << std::endl;
         if (xmi > 0 || xma > 0) {// not 2008BK
             if (nloci * allele_effect * 2 - G * xrange > 1e-6) norepeat = 0;
         }
-        for (int gggg = 1; gggg <= norepeat; ++gggg) {
+        for (unsigned gggg = 1; gggg <= norepeat; ++gggg) {
             std::list<Cball> alist;// creat list for control individuals
             // Creat individuals
             if (argc > 2) {
@@ -97,12 +97,12 @@ int main(int argc, char* argv[]) {
             } else {
                 Newball2008(no, nomale, &alist, 0.5);
             }
-            long minx = 0;
-            long maxx = 0;
-            for (int y = 1; y <= nogeneration; ++y) {// Generation
+            int minx = 0;
+            int maxx = 0;
+            for (unsigned y = 1; y <= nogeneration; ++y) {// Generation
                 AssignBucket(&alist);
                 const size_t itemP = alist.size();// check number of individuals
-                if (itemP <= 0) {
+                if (itemP == 0) {
                     SaveE(prep, gggg);
                     y = nogeneration;
                 }
@@ -121,7 +121,7 @@ int main(int argc, char* argv[]) {
                     // reproduced by females /////
                     maxx = 0;
                     minx = 40000;
-                    const size_t num_parents = alist.size();
+                    const unsigned num_parents = static_cast<unsigned>(alist.size());
                     for (std::list<Cball>::iterator it = alist.begin(); it != alist.end(); ++it) {
                         if (it->xp > maxx) maxx = it->xp;
                         if (it->xp < minx) minx = it->xp;
@@ -129,7 +129,7 @@ int main(int argc, char* argv[]) {
                             // choose female having nonzero fitness
                             // Search candidate mates :
                             // female search candidate mates
-                            const size_t nofm = it->matingcount(sizemating);
+                            const unsigned nofm = it->matingcount(sizemating);
                             if (nofm < it->candidatemate.size()) {
                                 // if candidate males were not zero
                                 const Cball& male = *it->candidatemate[nofm];
@@ -144,7 +144,7 @@ int main(int argc, char* argv[]) {
                         SaveA(alist, y, gggg, num_parents, noclas);
                     }
                     std::list<Cball>::iterator it = alist.begin();
-                    for (size_t i = 0; i < num_parents; ++i) {
+                    for (unsigned i = 0; i < num_parents; ++i) {
                         it = alist.erase(it);// clear parents
                     }
                 }

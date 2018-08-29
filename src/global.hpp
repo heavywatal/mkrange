@@ -11,8 +11,8 @@ extern int yrange;
 extern int xmi;
 extern int xma;
 extern double Vp;
-extern int nloci;
-extern int nopoly;
+extern unsigned nloci;
+extern unsigned nopoly;
 extern double allele_effect;
 extern std::mt19937_64 engine;
 

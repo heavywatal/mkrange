@@ -18,24 +18,24 @@ class Cball {
     void set_resource();
     void nreproduction(const Cball& male, std::list<Cball>* ablist, double mdis, double fdis, double mr, double nmr);
     void measurefitness(double RR, double gradient, double Vs, double K, double Range, double MS);
-    size_t matingcount(int matingsize) const;
+    unsigned matingcount(int matingsize) const;
     double distance(const Cball&) const;
     double resource() const {return resource_;};
 
     int xp, yp, sexi;
     std::vector<short> gene1, gene2;
-    int nomating;
+    unsigned nomating;
     double dfitness;
-    int nooffspring;
+    unsigned nooffspring;
     std::vector<std::list<Cball>::iterator> candidatemate;
   private:
     double resource_;
 };
 
 void Newball(const char* infile, std::list<Cball>* list1);
-void Newball2008(int n, int male, std::list<Cball>* list1, double fr);
-void SaveF(const std::list<Cball>& clist, int g, int gg, size_t n);
-void SaveE(int g, int gg);
-void SaveA(const std::list<Cball>& clist, int g, int gg, size_t n, int clas);
+void Newball2008(unsigned n, unsigned male, std::list<Cball>* list1, double fr);
+void SaveF(const std::list<Cball>& clist, unsigned g, unsigned gg, unsigned n);
+void SaveE(unsigned g, unsigned gg);
+void SaveA(const std::list<Cball>& clist, unsigned g, unsigned gg, unsigned n, unsigned clas);
 void AssignBucket(std::list<Cball>* list1);
 //Individuals is stored in each bucket according to the position.
