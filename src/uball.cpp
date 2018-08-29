@@ -71,23 +71,26 @@ std::vector<short> Cball::make_gamete(const double mr, const double nmr) const {
 // reproduction
 void Cball::nreproduction(const Cball& male, std::list<Cball>* ablist, double mdis, double fdis, double mr, double nmr) {
     ++nomating;
+    constexpr double PI = 3.14159265358979323846;
+    std::uniform_real_distribution<double> angle_dist(0.0, 2 * PI);
     for (unsigned i = 0; i < nooffspring; ++i) {
         const int gg = wtl::randombit(engine);// determin offspring sex
         const double sddispersal = (gg == 0) ? fdis : mdis;
-        std::normal_distribution<double> normal(0.0, sddispersal);
+        std::normal_distribution<double> radius_dist(0.0, sddispersal);
         int nx = 0;
         int ny = 0;
         do {//// desersal
             // random number from normal distribtion with sddispersal standard deviationa and 0 mean
-            nx = xp + static_cast<int>(normal(engine));
-            ny = yp + static_cast<int>(normal(engine));
-            if (ny > yrange) ny = ny - yrange;
-            if (ny <= 0) ny = yrange + ny;
-        } while ((nx <= minxrange) || (nx > xrange ) || (ny <= 0) || (ny > yrange));
+            const double radius = radius_dist(engine);
+            const double angle = angle_dist(engine);
+            nx = xp + static_cast<int>(radius * std::cos(angle));
+            ny = yp + static_cast<int>(radius * std::sin(angle));
+            if (ny <= 0) ny += yrange;
+            if (ny > yrange) ny -= yrange;
+        } while ((nx <= minxrange) || (nx > xrange) || (ny <= 0) || (ny > yrange));
         // Initialize offspring position and sex
         // add offspring the list
-        ablist->push_back(Cball(static_cast<int>(nx), static_cast<int>(ny), gg,
-                                make_gamete(mr, nmr), male.make_gamete(mr, nmr)));
+        ablist->push_back(Cball(nx, ny, gg, make_gamete(mr, nmr), male.make_gamete(mr, nmr)));
     }
 }
 
