@@ -1,8 +1,11 @@
+#pragma once
+#ifndef MKRANGE_RANDOM_HPP_
+#define MKRANGE_RANDOM_HPP_
+
 #include <random>
+#include <limits>
 
 namespace wtl {
-
-constexpr double PI = 3.14159265358979323846;
 
 template <class URBG>
 bool bernoulli(double p, URBG& engine) {
@@ -11,7 +14,9 @@ bool bernoulli(double p, URBG& engine) {
 
 template <class URBG>
 bool randombit(URBG& engine) {
-  return bernoulli(0.5, engine);
+  return engine() & 1u;
 }
 
 }
+
+#endif// MKRANGE_RANDOM_HPP_

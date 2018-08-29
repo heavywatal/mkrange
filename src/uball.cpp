@@ -71,8 +71,8 @@ void Cball::nreproduction(const Cball& male, std::list<Cball>* ablist, double md
         int ny = 0;
         do {//// desersal
             // random number from normal distribtion with sddispersal standard deviationa and 0 mean
-            nx = xp + normal(engine);
-            ny = yp + normal(engine);
+            nx = xp + static_cast<int>(normal(engine));
+            ny = yp + static_cast<int>(normal(engine));
             if (ny > yrange) ny = ny - yrange;
             if (ny <= 0) ny = yrange + ny;
         } while ((nx <= minxrange) || (nx > xrange ) || (ny <= 0) || (ny > yrange));
@@ -156,7 +156,7 @@ Cball::Cball(const std::vector<int>& row)
             gene2[col_8] = 1;
         }
         else if (row[col] == 1) {
-            if (wtl::randombit(engine) == 0) {
+            if (wtl::randombit(engine)) {
                 gene1[col_8] = 1;
             } else {
                 gene2[col_8] = 1;
@@ -212,8 +212,8 @@ inline std::vector<std::vector<short>> make_haplotypes(int popsize, int freq) {
 }
 
 void Newball2008(int n, int male, std::list<Cball>* list1, double fr) {
-    const int aa = std::round(fr * fr * n);
-    const int ab = std::round(fr * (1 - fr) * 2 * n);
+    const int aa = static_cast<int>(std::round(fr * fr * n));
+    const int ab = static_cast<int>(std::round(fr * (1 - fr) * 2 * n));
     const std::vector<std::vector<short>> haplotypes1 = make_haplotypes(n, aa + ab);
     const std::vector<std::vector<short>> haplotypes2 = make_haplotypes(n, aa);
     std::uniform_int_distribution<int> uniform_x(1, 500);

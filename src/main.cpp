@@ -16,7 +16,7 @@ double Vp;
 int nloci;
 int nopoly;
 double allele_effect;
-std::mt19937 engine;
+std::mt19937_64 engine;
 
 int main(int argc, char* argv[]) {
     if (argc < 2) throw std::runtime_error("too few arguments");
